@@ -1,4 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Video Kutubxona
+
+Video kutubxona loyihasi - videolarni yuklash, ko'rish va boshqarish uchun platforma.
+
+## Texnologiyalar
+
+- Next.js 14
+- TypeScript
+- Tailwind CSS
+- Firebase Authentication
+- Cloudflare Stream API
+
+## O'rnatish
+
+1. Loyihani clone qiling:
+```bash
+git clone https://github.com/username/video-kutubxona.git
+cd video-kutubxona
+```
+
+2. Kerakli paketlarni o'rnating:
+```bash
+npm install
+```
+
+3. `.env.local` faylini yarating va quyidagi o'zgaruvchilarni sozlang:
+```
+NEXT_PUBLIC_CLOUDFLARE_STREAM_TOKEN=your_token
+NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID=your_account_id
+NEXT_PUBLIC_CLOUDFLARE_API_TOKEN=your_api_token
+
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+NEXT_PUBLIC_FIREBASE_DATABASE_URL=your_database_url
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
+```
+
+4. Loyihani ishga tushiring:
+```bash
+npm run dev
+```
+
+## Xususiyatlar
+
+- Video yuklash va boshqarish
+- Kategoriyalar bo'yicha saralash
+- Like/Dislike tizimi
+- Ko'rishlar soni hisobi
+- Admin panel
+- Firebase autentifikatsiya
+
+## Litsenziya
+
+MIT
 
 ## Getting Started
 

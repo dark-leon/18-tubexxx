@@ -33,7 +33,6 @@ export default function Navbar({ onSearch }: NavbarProps) {
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="text-xl font-bold text-white flex items-center space-x-2">
             <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">18-TubeXXX</span>
-            <span className="text-sm text-gray-500">Free Adult Videos</span>
           </Link>
 
           {/* Desktop menu */}

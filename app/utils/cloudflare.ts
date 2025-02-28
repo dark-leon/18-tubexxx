@@ -68,56 +68,34 @@ export async function getVideos(): Promise<VideoData[]> {
   }
 }
 
-export async function updateVideoMeta(videoId: string, meta: Partial<VideoData['meta']>) {
+interface VideoMeta {
+  name?: string;
+  description?: string;
+  category?: string;
+  categories?: string;
+  views?: string;
+  likes?: string;
+  dislikes?: string;
+  uploadedAt?: string;
+}
+
+export async function updateVideoMeta(videoId: string, meta: VideoMeta) {
   try {
-    // Get current video metadata first
-    const response = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream/${videoId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_CLOUDFLARE_API_TOKEN}`,
-        },
-      }
-    );
+    const response = await fetch(`/api/videos/${videoId}/meta`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(meta),
+    });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch current video metadata');
+      throw new Error('Video ma\'lumotlarini yangilashda xatolik');
     }
 
-    const currentVideo = await response.json();
-    
-    // Merge existing metadata with new metadata
-    const updatedMeta = {
-      ...currentVideo.result.meta,
-      ...meta,
-    };
-
-    // Update video with merged metadata
-    const updateResponse = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream/${videoId}`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_CLOUDFLARE_API_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          meta: updatedMeta
-        }),
-      }
-    );
-
-    if (!updateResponse.ok) {
-      const errorText = await updateResponse.text();
-      console.error('Update Error:', errorText);
-      throw new Error('Failed to update video metadata');
-    }
-
-    const updatedData = await updateResponse.json();
-    return updatedData.result;
+    return await response.json();
   } catch (error) {
-    console.error('Error updating video metadata:', error);
-    throw error;
+    throw new Error('Video ma\'lumotlarini yangilashda xatolik');
   }
 }
 
@@ -157,6 +135,139 @@ export async function deleteVideo(videoId: string) {
     return true;
   } catch (error) {
     console.error('Error deleting video:', error);
+    throw error;
+  }
+}
+
+interface UploadResult {
+  uid: string;
+  thumbnail: string;
+  playback: {
+    hls: string;
+    dash: string;
+  };
+  status: {
+    state: string;
+    pctComplete: number;
+  };
+}
+
+export async function uploadVideo(
+  file: File,
+  metadata: VideoMeta,
+  onProgress?: (progress: number) => void
+): Promise<UploadResult> {
+  try {
+    // 1. Cloudflare Stream API ga to'g'ridan-to'g'ri yuklash
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_CLOUDFLARE_API_TOKEN}`,
+        },
+        body: formData
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('Upload error:', error);
+      throw new Error('Video yuklashda xatolik yuz berdi');
+    }
+
+    const result = await response.json();
+    console.log('Upload result:', result);
+
+    if (!result.success || !result.result?.uid) {
+      throw new Error('Video yuklashda xatolik yuz berdi');
+    }
+
+    const videoId = result.result.uid;
+
+    // 2. Video metama'lumotlarini yangilash
+    const metaResponse = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream/${videoId}`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_CLOUDFLARE_API_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          meta: {
+            name: metadata.name || 'Nomsiz video',
+            description: metadata.description || '',
+            category: metadata.category || '',
+            categories: metadata.categories || '',
+            views: '0',
+            likes: '0',
+            dislikes: '0',
+            uploadedAt: new Date().toISOString()
+          }
+        })
+      }
+    );
+
+    if (!metaResponse.ok) {
+      console.error('Metadata update error:', await metaResponse.text());
+    }
+
+    // 3. Video holatini tekshirish
+    let attempts = 0;
+    const maxAttempts = 30; // 1 minut
+    const pollInterval = 2000; // 2 sekund
+
+    while (attempts < maxAttempts) {
+      const statusResponse = await fetch(
+        `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream/${videoId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_CLOUDFLARE_API_TOKEN}`
+          }
+        }
+      );
+
+      if (statusResponse.ok) {
+        const status = await statusResponse.json();
+        console.log('Video status:', status);
+
+        if (status.result?.readyToStream) {
+          return {
+            uid: videoId,
+            thumbnail: status.result.thumbnail || '',
+            playback: {
+              hls: status.result.playback?.hls || '',
+              dash: status.result.playback?.dash || '',
+            },
+            status: {
+              state: 'ready',
+              pctComplete: 100,
+            },
+          };
+        }
+
+        if (status.result?.status?.state === 'error') {
+          throw new Error('Video qayta ishlashda xatolik yuz berdi');
+        }
+      }
+
+      attempts++;
+      await new Promise(resolve => setTimeout(resolve, pollInterval));
+    }
+
+    // Vaqt tugadi, lekin video hali ham qayta ishlanmoqda
+    return {
+      uid: videoId,
+      thumbnail: '',
+      playback: { hls: '', dash: '' },
+      status: { state: 'processing', pctComplete: 100 }
+    };
+  } catch (error) {
+    console.error('Upload error:', error);
     throw error;
   }
 } 

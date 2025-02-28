@@ -1,6 +1,3 @@
-# Video Kutubxona
-
-Video kutubxona loyihasi - videolarni yuklash, ko'rish va boshqarish uchun platforma.
 
 ## Texnologiyalar
 

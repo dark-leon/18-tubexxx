@@ -21,6 +21,8 @@ export default function WatchPage({ params }: PageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [hasLiked, setHasLiked] = useState(false);
+  const [hasDisliked, setHasDisliked] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,10 +30,14 @@ export default function WatchPage({ params }: PageProps) {
         const videos = await getVideos();
         const video = videos.find((v) => v.uid === id);
         if (video) {
-          // Increment view count when video is found
           const updatedVideo = await incrementViews(video.uid, video.meta.views || '0');
           setCurrentVideo(updatedVideo);
           setRecommendedVideos(videos.filter((v) => v.uid !== id));
+          
+          // Check if user has already liked/disliked this video
+          const likeStatus = localStorage.getItem(`video_${id}_like_status`);
+          if (likeStatus === 'liked') setHasLiked(true);
+          if (likeStatus === 'disliked') setHasDisliked(true);
         } else {
           setError('Video not found');
         }
@@ -52,20 +58,26 @@ export default function WatchPage({ params }: PageProps) {
   };
 
   const onLike = async () => {
-    if (!currentVideo) return;
+    if (!currentVideo || hasLiked) return;
     try {
       const updatedVideo = await handleLike(currentVideo.uid, currentVideo.meta.likes || '0');
       setCurrentVideo(updatedVideo);
+      setHasLiked(true);
+      setHasDisliked(false);
+      localStorage.setItem(`video_${id}_like_status`, 'liked');
     } catch (err) {
       console.error('Error adding like:', err);
     }
   };
 
   const onDislike = async () => {
-    if (!currentVideo) return;
+    if (!currentVideo || hasDisliked) return;
     try {
       const updatedVideo = await handleDislike(currentVideo.uid, currentVideo.meta.dislikes || '0');
       setCurrentVideo(updatedVideo);
+      setHasDisliked(true);
+      setHasLiked(false);
+      localStorage.setItem(`video_${id}_like_status`, 'disliked');
     } catch (err) {
       console.error('Error adding dislike:', err);
     }
@@ -185,11 +197,17 @@ export default function WatchPage({ params }: PageProps) {
                 <div className="flex items-center gap-4">
                   <button
                     onClick={onLike}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#111827]/60 backdrop-blur-sm hover:bg-[#1F2937]/80 transition-all hover:shadow-lg hover:shadow-cyan-500/10 border border-cyan-950"
+                    className={`group flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                      hasLiked
+                        ? 'bg-emerald-400 hover:bg-emerald-500 text-white'
+                        : 'bg-gradient-to-r from-emerald-400/10 to-cyan-400/10 hover:from-emerald-400/20 hover:to-cyan-400/20 border border-emerald-400/20 hover:shadow-emerald-500/20'
+                    }`}
                   >
                     <svg
-                      className="w-5 h-5 text-emerald-400"
-                      fill="none"
+                      className={`w-5 h-5 transition-transform duration-300 group-hover:scale-110 ${
+                        hasLiked ? 'text-white' : 'text-emerald-400 group-hover:text-emerald-300'
+                      }`}
+                      fill={hasLiked ? 'currentColor' : 'none'}
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
@@ -200,26 +218,34 @@ export default function WatchPage({ params }: PageProps) {
                         d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"
                       />
                     </svg>
-                    <span>{currentVideo.meta.likes || '0'}</span>
+                    <span className={`font-medium ${
+                      hasLiked ? 'text-white' : 'text-emerald-400 group-hover:text-emerald-300'
+                    } transition-colors duration-300`}>{currentVideo.meta.likes || '0'}</span>
                   </button>
                   <button
                     onClick={onDislike}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#111827]/60 backdrop-blur-sm hover:bg-[#1F2937]/80 transition-all hover:shadow-lg hover:shadow-cyan-500/10 border border-cyan-950"
+                    className={`group flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                      hasDisliked
+                        ? 'bg-rose-400 hover:bg-rose-500 text-white'
+                        : 'bg-gradient-to-r from-rose-500/10 to-red-500/10 hover:from-rose-500/20 hover:to-red-500/20 border border-rose-500/20 hover:shadow-rose-500/20'
+                    }`}
                   >
                     <svg
-                      className="w-5 h-5 text-emerald-400"
-                      fill="none"
+                      className={`w-5 h-5 transition-transform duration-300 group-hover:scale-110 ${
+                        hasDisliked ? 'text-white' : 'text-rose-400 group-hover:text-rose-300'
+                      }`}
+                      fill={hasDisliked ? 'currentColor' : 'none'}
                       stroke="currentColor"
                       viewBox="0 0 24 24"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5 6h2a2 2 0 002-2v-6a2 2 0 00-2-2h-2.5"
-                      />
+                      <path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3zm7-13h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17" />
                     </svg>
-                    <span>{currentVideo.meta.dislikes || '0'}</span>
+                    <span className={`font-medium ${
+                      hasDisliked ? 'text-white' : 'text-rose-400 group-hover:text-rose-300'
+                    } transition-colors duration-300`}>{currentVideo.meta.dislikes || '0'}</span>
                   </button>
                 </div>
               </div>

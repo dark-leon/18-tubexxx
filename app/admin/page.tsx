@@ -90,33 +90,56 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+    <div className="min-h-screen bg-[#030712] text-white">
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.05)_0%,rgba(6,182,212,0.05)_100%)] pointer-events-none"></div>
+      <div className="fixed inset-0 bg-[url('/dots.png')] opacity-[0.03] mix-blend-screen pointer-events-none"></div>
       <Navbar />
       <main className="container mx-auto px-4 pt-24 pb-8">
         <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
-          <h1 className="text-3xl font-bold">Admin Panel</h1>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Admin Panel</h1>
           <div className="flex items-center gap-4 w-full md:w-auto">
-            <input
-              type="text"
-              placeholder="Search videos..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 md:w-64 px-4 py-2 bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
+            <Link
+              href="/admin/upload"
+              className="px-4 py-2.5 bg-gradient-to-r from-emerald-400 to-cyan-400 hover:from-cyan-400 hover:to-emerald-400 rounded-lg text-white transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap"
+            >
+              + Video yuklash
+            </Link>
+            <div className="relative flex-1 md:w-64">
+              <input
+                type="text"
+                placeholder="Videolarni qidirish..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-[#1E293B]/60 backdrop-blur-sm rounded-lg border border-cyan-950 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+              />
+              <svg
+                className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
             <button
               onClick={handleLogout}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg whitespace-nowrap"
+              className="px-4 py-2.5 bg-gradient-to-r from-rose-500 to-red-500 hover:from-red-500 hover:to-rose-500 rounded-lg text-white transition-all shadow-lg shadow-rose-500/20 whitespace-nowrap"
             >
-              Log Out
+              Chiqish
             </button>
           </div>
         </div>
         
         <div className="grid gap-6">
           {filteredVideos.map((video) => (
-            <div key={video.uid} className="bg-gray-800 rounded-lg p-6">
+            <div key={video.uid} className="bg-[#111827]/60 backdrop-blur-sm rounded-xl border border-cyan-950 p-6 transition-all hover:shadow-lg hover:shadow-emerald-500/10">
               <div className="flex flex-col md:flex-row gap-6">
-                <div className="w-full md:w-64 aspect-video relative rounded-lg overflow-hidden bg-gray-900">
+                <div className="w-full md:w-64 aspect-video relative rounded-lg overflow-hidden bg-[#0A0A0F] ring-1 ring-cyan-950">
                   <iframe
                     src={`https://iframe.videodelivery.net/${video.uid}`}
                     className="w-full h-full absolute top-0 left-0"
@@ -126,24 +149,26 @@ export default function AdminPage() {
                 
                 <div className="flex-1">
                   <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 gap-4">
-                    <h2 className="text-xl font-semibold">{video.meta.name || 'Untitled video'}</h2>
+                    <h2 className="text-xl font-semibold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                      {video.meta.name || 'Untitled video'}
+                    </h2>
                     <div className="flex gap-2">
                       <Link
                         href={`/admin/edit/${video.uid}`}
-                        className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg"
+                        className="px-4 py-2 bg-gradient-to-r from-emerald-400 to-cyan-400 hover:from-cyan-400 hover:to-emerald-400 rounded-lg transition-all shadow-lg shadow-emerald-500/20"
                       >
-                        Edit
+                        O'zgartirish
                       </Link>
                       <button
                         onClick={() => handleDeleteVideo(video.uid)}
                         disabled={deletingVideo === video.uid}
-                        className={`px-4 py-2 rounded-lg ${
+                        className={`px-4 py-2 rounded-lg transition-all ${
                           deletingVideo === video.uid
-                            ? 'bg-red-800 cursor-not-allowed'
-                            : 'bg-red-600 hover:bg-red-700'
+                            ? 'bg-rose-500/50 cursor-not-allowed'
+                            : 'bg-gradient-to-r from-rose-500 to-red-500 hover:from-red-500 hover:to-rose-500 shadow-lg shadow-rose-500/20'
                         }`}
                       >
-                        {deletingVideo === video.uid ? 'Deleting...' : 'Delete'}
+                        {deletingVideo === video.uid ? 'O\'chirilmoqda...' : 'O\'chirish'}
                       </button>
                     </div>
                   </div>
@@ -151,27 +176,27 @@ export default function AdminPage() {
                     <p className="text-gray-400 mb-4">{video.meta.description}</p>
                   )}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                    <div className="bg-gray-700 p-3 rounded-lg">
-                      <div className="text-gray-400">Views</div>
-                      <div className="text-lg font-semibold">{video.meta.views || '0'}</div>
+                    <div className="bg-[#1E293B]/60 backdrop-blur-sm p-3 rounded-lg border border-cyan-950">
+                      <div className="text-gray-400 mb-1">Ko'rishlar</div>
+                      <div className="text-lg font-semibold text-emerald-400">{video.meta.views || '0'}</div>
                     </div>
-                    <div className="bg-gray-700 p-3 rounded-lg">
-                      <div className="text-gray-400">Likes</div>
-                      <div className="text-lg font-semibold">{video.meta.likes || '0'}</div>
+                    <div className="bg-[#1E293B]/60 backdrop-blur-sm p-3 rounded-lg border border-cyan-950">
+                      <div className="text-gray-400 mb-1">Like</div>
+                      <div className="text-lg font-semibold text-emerald-400">{video.meta.likes || '0'}</div>
                     </div>
-                    <div className="bg-gray-700 p-3 rounded-lg">
-                      <div className="text-gray-400">Dislikes</div>
-                      <div className="text-lg font-semibold">{video.meta.dislikes || '0'}</div>
+                    <div className="bg-[#1E293B]/60 backdrop-blur-sm p-3 rounded-lg border border-cyan-950">
+                      <div className="text-gray-400 mb-1">Dislike</div>
+                      <div className="text-lg font-semibold text-emerald-400">{video.meta.dislikes || '0'}</div>
                     </div>
-                    <div className="bg-gray-700 p-3 rounded-lg">
-                      <div className="text-gray-400">Categories</div>
+                    <div className="bg-[#1E293B]/60 backdrop-blur-sm p-3 rounded-lg border border-cyan-950">
+                      <div className="text-gray-400 mb-1">Kategoriyalar</div>
                       <div className="text-lg font-semibold">
                         {video.meta.category ? (
                           <div className="flex flex-wrap gap-1">
                             {video.meta.category.split(', ').map((category, index) => (
                               <span
                                 key={index}
-                                className="inline-block px-2 py-1 bg-purple-600/20 text-purple-400 rounded-full text-xs"
+                                className="inline-block px-2 py-1 bg-emerald-400/10 text-emerald-400 rounded-full text-xs border border-emerald-400/20"
                               >
                                 {category}
                               </span>

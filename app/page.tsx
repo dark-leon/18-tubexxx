@@ -100,7 +100,7 @@ function VideoGrid() {
       <div className="fixed inset-0 bg-[url('/dots.png')] opacity-[0.03] mix-blend-screen pointer-events-none"></div>
       <Navbar onSearch={handleSearch} />
       <main className="container mx-auto px-4 pt-24 pb-8 relative">
-        <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Free Adult Videos</h1>
+      
 
         {/* Filter buttons */}
         <div className="flex justify-center gap-4 mb-8">

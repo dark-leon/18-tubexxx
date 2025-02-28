@@ -8,6 +8,7 @@ import type { VideoData } from '../utils/cloudflare';
 import Navbar from '../components/Navbar';
 import CategorySelect from '../components/CategorySelect';
 import Cookies from 'js-cookie';
+import Link from 'next/link';
 
 export default function AdminPage() {
   const router = useRouter();
@@ -16,10 +17,19 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [editingVideo, setEditingVideo] = useState<VideoData | null>(null);
   const [deletingVideo, setDeletingVideo] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
+    const checkAuth = () => {
+      const authSession = Cookies.get('auth_session');
+      if (!authSession) {
+        router.push('/admin/login');
+      }
+    };
+
+    checkAuth();
     fetchVideos();
-  }, []);
+  }, [router]);
 
   const fetchVideos = async () => {
     try {
@@ -31,6 +41,10 @@ export default function AdminPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
   };
 
   const handleUpdateVideo = async (video: VideoData, updates: Partial<VideoData['meta']>) => {
@@ -72,7 +86,7 @@ export default function AdminPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
-        <Navbar />
+        <Navbar onSearch={handleSearch} />
         <div className="container mx-auto px-4 pt-24 pb-8">
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
@@ -85,7 +99,7 @@ export default function AdminPage() {
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
-        <Navbar />
+        <Navbar onSearch={handleSearch} />
         <div className="container mx-auto px-4 pt-24 pb-8">
           <div className="text-center text-xl text-red-500">{error}</div>
         </div>
@@ -93,25 +107,40 @@ export default function AdminPage() {
     );
   }
 
+  const filteredVideos = videos.filter(video => 
+    video.meta.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    video.meta.category?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
-      <Navbar />
+      <Navbar onSearch={handleSearch} />
       <main className="container mx-auto px-4 pt-24 pb-8">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold">Admin Panel</h1>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg"
-          >
-            Chiqish
-          </button>
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+            Admin Panel
+          </h1>
+          <div className="flex gap-2 sm:gap-4">
+            <Link
+              href="/"
+              className="px-3 sm:px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-white text-sm transition-colors"
+            >
+              Back to Home
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="px-3 sm:px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white text-sm transition-colors"
+            >
+              Logout
+            </button>
+          </div>
         </div>
         
-        <div className="grid gap-6">
-          {videos.map((video) => (
-            <div key={video.uid} className="bg-gray-800 rounded-lg p-6">
-              <div className="flex gap-6">
-                <div className="w-64 aspect-video relative rounded-lg overflow-hidden bg-gray-900">
+        <div className="grid gap-4 sm:gap-6">
+          {filteredVideos.map((video) => (
+            <div key={video.uid} className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                <div className="w-full sm:w-64 aspect-video relative rounded-lg overflow-hidden bg-gray-900">
                   <iframe
                     src={`https://iframe.videodelivery.net/${video.uid}`}
                     className="w-full h-full absolute top-0 left-0"
@@ -154,16 +183,16 @@ export default function AdminPage() {
                           })}
                         />
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <button
                           onClick={() => handleUpdateVideo(video, editingVideo.meta)}
-                          className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg"
+                          className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm"
                         >
                           Saqlash
                         </button>
                         <button
                           onClick={() => setEditingVideo(null)}
-                          className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg"
+                          className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-sm"
                         >
                           Bekor qilish
                         </button>
@@ -171,19 +200,19 @@ export default function AdminPage() {
                     </div>
                   ) : (
                     <>
-                      <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-semibold">{video.meta.name}</h2>
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+                        <h2 className="text-lg sm:text-xl font-semibold">{video.meta.name}</h2>
                         <div className="flex gap-2">
                           <button
                             onClick={() => setEditingVideo(video)}
-                            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg"
+                            className="px-3 sm:px-4 py-1.5 sm:py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm"
                           >
                             Tahrirlash
                           </button>
                           <button
                             onClick={() => handleDeleteVideo(video.uid)}
                             disabled={deletingVideo === video.uid}
-                            className={`px-4 py-2 rounded-lg ${
+                            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm ${
                               deletingVideo === video.uid
                                 ? 'bg-red-800 cursor-not-allowed'
                                 : 'bg-red-600 hover:bg-red-700'
@@ -194,24 +223,24 @@ export default function AdminPage() {
                         </div>
                       </div>
                       {video.meta.description && (
-                        <p className="text-gray-400 mb-4">{video.meta.description}</p>
+                        <p className="text-gray-400 mb-4 text-sm sm:text-base">{video.meta.description}</p>
                       )}
-                      <div className="grid grid-cols-4 gap-4 text-sm">
-                        <div className="bg-gray-700 p-3 rounded-lg">
-                          <div className="text-gray-400">Ko'rishlar</div>
-                          <div className="text-lg font-semibold">{video.meta.views}</div>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 text-sm">
+                        <div className="bg-gray-700/50 p-3 rounded-lg">
+                          <div className="text-gray-400 text-xs sm:text-sm">Ko'rishlar</div>
+                          <div className="text-base sm:text-lg font-semibold">{video.meta.views || '0'}</div>
                         </div>
-                        <div className="bg-gray-700 p-3 rounded-lg">
-                          <div className="text-gray-400">Like lar</div>
-                          <div className="text-lg font-semibold">{video.meta.likes}</div>
+                        <div className="bg-gray-700/50 p-3 rounded-lg">
+                          <div className="text-gray-400 text-xs sm:text-sm">Like lar</div>
+                          <div className="text-base sm:text-lg font-semibold">{video.meta.likes || '0'}</div>
                         </div>
-                        <div className="bg-gray-700 p-3 rounded-lg">
-                          <div className="text-gray-400">Dislike lar</div>
-                          <div className="text-lg font-semibold">{video.meta.dislikes}</div>
+                        <div className="bg-gray-700/50 p-3 rounded-lg">
+                          <div className="text-gray-400 text-xs sm:text-sm">Dislike lar</div>
+                          <div className="text-base sm:text-lg font-semibold">{video.meta.dislikes || '0'}</div>
                         </div>
-                        <div className="bg-gray-700 p-3 rounded-lg">
-                          <div className="text-gray-400">Kategoriyalar</div>
-                          <div className="text-lg font-semibold">
+                        <div className="bg-gray-700/50 p-3 rounded-lg">
+                          <div className="text-gray-400 text-xs sm:text-sm">Kategoriyalar</div>
+                          <div className="text-base sm:text-lg font-semibold truncate">
                             {video.meta.categories ? video.meta.categories.split(',').join(', ') : '-'}
                           </div>
                         </div>

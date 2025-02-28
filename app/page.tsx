@@ -72,11 +72,11 @@ function VideoGrid() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+      <div className="min-h-screen bg-[#0A0A0F] bg-[linear-gradient(to_bottom,rgba(0,0,0,0)_0%,rgba(0,0,0,0.8)_100%)] text-white">
         <Navbar onSearch={handleSearch} />
         <div className="container mx-auto px-4 pt-24 pb-8">
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
           </div>
         </div>
       </div>
@@ -85,49 +85,51 @@ function VideoGrid() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+      <div className="min-h-screen bg-[#0A0A0F] bg-[linear-gradient(to_bottom,rgba(0,0,0,0)_0%,rgba(0,0,0,0.8)_100%)] text-white">
         <Navbar onSearch={handleSearch} />
         <div className="container mx-auto px-4 pt-24 pb-8">
-          <div className="text-center text-xl text-red-500">{error}</div>
+          <div className="text-center text-xl text-pink-500">{error}</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+    <div className="min-h-screen bg-[#030712] text-white">
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.05)_0%,rgba(6,182,212,0.05)_100%)] pointer-events-none"></div>
+      <div className="fixed inset-0 bg-[url('/dots.png')] opacity-[0.03] mix-blend-screen pointer-events-none"></div>
       <Navbar onSearch={handleSearch} />
-      <main className="container mx-auto px-4 pt-24 pb-8">
-        <h1 className="text-4xl font-bold text-center mb-8">Free Adult Videos</h1>
+      <main className="container mx-auto px-4 pt-24 pb-8 relative">
+        <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Free Adult Videos</h1>
 
         {/* Filter buttons */}
         <div className="flex justify-center gap-4 mb-8">
           <button
             onClick={() => setActiveFilter('all')}
-            className={`px-4 py-2 rounded-lg transition-colors ${
+            className={`px-4 py-2 rounded-lg transition-all ${
               activeFilter === 'all'
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
+                : 'bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10'
             }`}
           >
             All
           </button>
           <button
             onClick={() => setActiveFilter('new')}
-            className={`px-4 py-2 rounded-lg transition-colors ${
+            className={`px-4 py-2 rounded-lg transition-all ${
               activeFilter === 'new'
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
+                : 'bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10'
             }`}
           >
             Recently Added
           </button>
           <button
             onClick={() => setActiveFilter('popular')}
-            className={`px-4 py-2 rounded-lg transition-colors ${
+            className={`px-4 py-2 rounded-lg transition-all ${
               activeFilter === 'popular'
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
+                : 'bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10'
             }`}
           >
             Most Viewed
@@ -137,7 +139,7 @@ function VideoGrid() {
         {/* Search results info */}
         {searchQuery && (
           <div className="text-center mb-8">
-            <p className="text-gray-400">
+            <p className="text-gray-500">
               {filteredVideos.length === 0
                 ? 'No videos found'
                 : `Found ${filteredVideos.length} video${filteredVideos.length === 1 ? '' : 's'}`}
@@ -150,21 +152,21 @@ function VideoGrid() {
           {filteredVideos.map((video) => (
             <div
               key={video.uid}
-              className="group bg-gray-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-purple-500 transition-all"
+              className="group bg-[#111827]/60 backdrop-blur-sm rounded-lg overflow-hidden hover:ring-1 hover:ring-cyan-400/50 transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/10"
             >
               {/* Video thumbnail and preview container */}
               <Link href={`/watch/${video.uid}`} className="block">
-                <div className="relative aspect-video">
+                <div className="relative aspect-video bg-[#0A0A0F]">
                   <div className="absolute inset-0 bg-black group-hover:hidden">
                     {/* Static thumbnail (shown by default) */}
                     <img
                       src={`https://videodelivery.net/${video.uid}/thumbnails/thumbnail.jpg?time=${Math.floor(video.duration / 2)}s`}
                       alt={video.meta.name || 'Video thumbnail'}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
                     />
                     {/* Play button overlay */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-12 h-12 rounded-full bg-purple-600/80 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
                         <svg
                           className="w-6 h-6 text-white"
                           fill="currentColor"
@@ -194,14 +196,14 @@ function VideoGrid() {
               {/* Video info */}
               <div className="p-4">
                 <Link href={`/watch/${video.uid}`} className="block">
-                  <h2 className="text-white font-semibold line-clamp-2 mb-2 hover:text-purple-400 transition-colors">
+                  <h2 className="text-gray-100 font-medium line-clamp-2 mb-2 group-hover:text-cyan-400 transition-colors">
                     {video.meta.name || 'Untitled video'}
                   </h2>
                 </Link>
-                <div className="flex items-center text-sm text-gray-400 space-x-2 mb-2">
+                <div className="flex items-center text-sm text-gray-500 space-x-2 mb-2">
                   <span className="flex items-center">
                     <svg
-                      className="w-4 h-4 mr-1"
+                      className="w-4 h-4 mr-1 opacity-75"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -224,7 +226,7 @@ function VideoGrid() {
                   <span>•</span>
                   <span className="flex items-center">
                     <svg
-                      className="w-4 h-4 mr-1"
+                      className="w-4 h-4 mr-1 opacity-75"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -245,7 +247,7 @@ function VideoGrid() {
                     {video.meta.category.split(', ').map((category, index) => (
                       <span
                         key={index}
-                        className="inline-block px-2 py-0.5 bg-purple-600/20 text-purple-400 rounded-full text-xs"
+                        className="inline-block px-2 py-0.5 bg-[#1E293B]/60 backdrop-blur-sm text-gray-400 rounded-full text-xs border border-cyan-950"
                       >
                         {category}
                       </span>
@@ -260,7 +262,7 @@ function VideoGrid() {
         {/* No results message */}
         {filteredVideos.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-400 text-lg">No videos found</p>
+            <p className="text-gray-500 text-lg">No videos found</p>
           </div>
         )}
       </main>
@@ -271,10 +273,10 @@ function VideoGrid() {
 export default function Home() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+      <div className="min-h-screen bg-[#0A0A0F] bg-[linear-gradient(to_bottom,rgba(0,0,0,0)_0%,rgba(0,0,0,0.8)_100%)] text-white">
         <div className="container mx-auto px-4 pt-24 pb-8">
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
           </div>
         </div>
       </div>

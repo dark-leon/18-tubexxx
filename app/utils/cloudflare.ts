@@ -50,7 +50,7 @@ export async function getVideos(): Promise<VideoData[]> {
     const videos = data.result.map((video: VideoData) => ({
       ...video,
       meta: {
-        name: video.meta?.name || 'Nomsiz video',
+        name: video.meta?.name || '18+ Free Adult Video',
         views: video.meta?.views || '0',
         likes: video.meta?.likes || '0',
         dislikes: video.meta?.dislikes || '0',
@@ -89,12 +89,12 @@ export async function updateVideoMeta(videoId: string, meta: VideoMeta) {
     });
 
     if (!response.ok) {
-      throw new Error('Video ma\'lumotlarini yangilashda xatolik');
+      throw new Error('Error updating metadata ');
     }
 
     return await response.json();
   } catch (error) {
-    throw new Error('Video ma\'lumotlarini yangilashda xatolik');
+    throw new Error('Error updating metadata ');
   }
 }
 
@@ -188,7 +188,7 @@ export async function uploadVideo(
               },
               body: JSON.stringify({
                 meta: {
-                  name: metadata.name || 'Nomsiz video',
+                  name: metadata.name || '18+ Free Adult Video',
                   description: metadata.description || '',
                   category: metadata.category || '',
                   categories: metadata.categories || '',
@@ -202,7 +202,7 @@ export async function uploadVideo(
           );
 
           if (!metaResponse.ok) {
-            console.error('Meta ma\'lumotlarni yangilashda xatolik:', await metaResponse.text());
+            console.error('Error updating metadata: ', await metaResponse.text());
           }
 
           let attempts = 0;
@@ -260,7 +260,7 @@ export async function uploadVideo(
               await new Promise(resolve => setTimeout(resolve, pollInterval));
               await checkStatus();
             } catch (error) {
-              console.error('Video holatini tekshirishda xatolik:', error);
+              console.error('Error checking video status: ', error);
               resolve({
                 uid: videoId,
                 thumbnail: '',
@@ -272,7 +272,7 @@ export async function uploadVideo(
 
           await checkStatus();
         } else {
-          reject(new Error('Video yuklashda xatolik yuz berdi'));
+          reject(new Error('Error uploading video '));
         }
       } catch (error) {
         reject(error);
@@ -280,7 +280,7 @@ export async function uploadVideo(
     };
 
     xhr.onerror = () => {
-      reject(new Error('Video yuklashda tarmoq xatosi yuz berdi'));
+      reject(new Error('Error uploading video '));
     };
 
     const formData = new FormData();

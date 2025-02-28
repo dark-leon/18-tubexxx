@@ -36,8 +36,8 @@ export default function LoginPage() {
       <div className="fixed inset-0 bg-[url('/dots.png')] opacity-[0.03] mix-blend-screen pointer-events-none"></div>
       <div className="relative flex items-center justify-center min-h-screen">
         <div className="w-full max-w-md p-8 bg-[#111827]/60 backdrop-blur-sm rounded-2xl border border-cyan-950 shadow-xl">
-          <h1 className="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Admin Panel</h1>
-          <p className="text-gray-400 text-center mb-8">Tizimga kirish uchun ma'lumotlaringizni kiriting</p>
+          <h1 className="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Admin</h1>
+          <p className="text-gray-400 text-center mb-8">Enter your credentials to login to the system </p>
           
           <form onSubmit={handleLogin} className="space-y-6">
             {error && (

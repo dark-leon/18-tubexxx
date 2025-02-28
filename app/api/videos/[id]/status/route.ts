@@ -16,7 +16,7 @@ export async function GET(
 
     if (!response.ok) {
       return NextResponse.json(
-        { error: 'Video holatini tekshirishda xatolik' },
+        { error: 'Error checking video status' },
         { status: response.status }
       );
     }
@@ -32,7 +32,7 @@ export async function GET(
   } catch (error) {
     console.error('Status check error:', error);
     return NextResponse.json(
-      { error: 'Video holatini tekshirishda xatolik' },
+      { error: 'Error checking video status' },
       { status: 500 }
     );
   }

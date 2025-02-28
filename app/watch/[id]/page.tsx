@@ -34,7 +34,6 @@ export default function WatchPage({ params }: PageProps) {
           setCurrentVideo(updatedVideo);
           setRecommendedVideos(videos.filter((v) => v.uid !== id));
           
-          // Check if user has already liked/disliked this video
           const likeStatus = localStorage.getItem(`video_${id}_like_status`);
           if (likeStatus === 'liked') setHasLiked(true);
           if (likeStatus === 'disliked') setHasDisliked(true);

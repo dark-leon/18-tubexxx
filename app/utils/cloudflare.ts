@@ -47,7 +47,6 @@ export async function getVideos(): Promise<VideoData[]> {
 
     const data = await response.json();
     
-    // Initialize default values for videos that don't have metadata
     const videos = data.result.map((video: VideoData) => ({
       ...video,
       meta: {
@@ -158,10 +157,8 @@ export async function uploadVideo(
   onProgress?: (progress: number) => void
 ): Promise<UploadResult> {
   return new Promise((resolve, reject) => {
-    // 1. XMLHttpRequest yaratish
     const xhr = new XMLHttpRequest();
     
-    // Progress ni kuzatish
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable && onProgress) {
         const progress = Math.round((event.loaded / event.total) * 70);
@@ -169,7 +166,6 @@ export async function uploadVideo(
       }
     };
 
-    // Yuklash tugaganda
     xhr.onload = async () => {
       try {
         if (xhr.status >= 200 && xhr.status < 300) {
@@ -182,7 +178,6 @@ export async function uploadVideo(
 
           const videoId = result.result.uid;
           
-          // 2. Meta ma'lumotlarni yangilash
           const metaResponse = await fetch(
             `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream/${videoId}`,
             {
@@ -210,7 +205,6 @@ export async function uploadVideo(
             console.error('Meta ma\'lumotlarni yangilashda xatolik:', await metaResponse.text());
           }
 
-          // 3. Video holatini tekshirish
           let attempts = 0;
           const maxAttempts = 30;
           const pollInterval = 2000;
@@ -256,7 +250,6 @@ export async function uploadVideo(
                   return;
                 }
 
-                // Progress ni yangilash (70-95%)
                 if (onProgress) {
                   const processingProgress = Math.min(95, 70 + (attempts * 25 / maxAttempts));
                   onProgress(processingProgress);
@@ -286,12 +279,10 @@ export async function uploadVideo(
       }
     };
 
-    // Xatolik yuz berganda
     xhr.onerror = () => {
       reject(new Error('Video yuklashda tarmoq xatosi yuz berdi'));
     };
 
-    // 4. Video yuklash
     const formData = new FormData();
     formData.append('file', file);
 

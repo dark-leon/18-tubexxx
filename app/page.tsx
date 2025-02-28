@@ -40,7 +40,6 @@ function VideoGrid() {
   const filterVideos = (query: string, filter: string, videoList = videos) => {
     let filtered = [...videoList];
 
-    // Apply search filter
     if (query) {
       const searchLower = query.toLowerCase();
       filtered = filtered.filter(video =>
@@ -50,7 +49,6 @@ function VideoGrid() {
       );
     }
 
-    // Apply category filter
     switch (filter) {
       case 'new':
         filtered.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
@@ -59,7 +57,6 @@ function VideoGrid() {
         filtered.sort((a, b) => parseInt(b.meta.views || '0') - parseInt(a.meta.views || '0'));
         break;
       default:
-        // 'all' - no additional filtering needed
         break;
     }
 

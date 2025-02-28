@@ -13,7 +13,6 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase only on client side
 let app: FirebaseApp;
 let auth: Auth;
 

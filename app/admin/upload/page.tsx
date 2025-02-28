@@ -1,19 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '../../components/Navbar';
-import { uploadVideo, updateVideoMeta } from '../../utils/cloudflare';
+import { uploadVideo } from '@/app/utils/cloudflare';
+import { categoryList } from '@/app/utils/categories';
 
 export default function UploadPage() {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [categories, setCategories] = useState('');
-  const [isUploading, setIsUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const progressBarRef = useRef<HTMLProgressElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -21,36 +22,57 @@ export default function UploadPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!file) {
-      setError('Iltimos, video faylni tanlang');
-      return;
-    }
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(categoryId)) {
+        return prev.filter(id => id !== categoryId);
+      } else {
+        return [...prev, categoryId];
+      }
+    });
+  };
 
-    setIsUploading(true);
-    setError(null);
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!file) return;
 
     try {
-      // Upload video with metadata
-      const result = await uploadVideo(
+      setUploading(true);
+
+      // Kategoriyalarni string formatga o'tkazish
+      const categoryNames = selectedCategories
+        .map(id => categoryList.find(cat => cat.id === id)?.name)
+        .filter(Boolean)
+        .join(', ');
+
+      await uploadVideo(
         file,
         {
           name: title,
           description,
-          category: categories,
-          categories: 'default' // Bu yerga kerakli qiymatni qo'ying
+          category: categoryNames,
+          categories: selectedCategories.join(',')
         },
         (progress) => {
-          setUploadProgress(progress);
+          setProgress(progress);
+          if (progressBarRef.current) {
+            progressBarRef.current.value = progress;
+          }
         }
       );
 
-      router.push('/admin');
-    } catch (err: any) {
-      setError(err.message || 'Video yuklashda xatolik yuz berdi');
+      // Yuklash tugagandan so'ng formani tozalash
+      setFile(null);
+      setTitle('');
+      setDescription('');
+      setSelectedCategories([]);
+      setProgress(0);
+      alert('Video muvaffaqiyatli yuklandi!');
+    } catch (error) {
+      console.error('Yuklash xatosi:', error);
+      alert('Video yuklashda xatolik yuz berdi!');
     } finally {
-      setIsUploading(false);
+      setUploading(false);
     }
   };
 
@@ -70,104 +92,113 @@ export default function UploadPage() {
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="bg-rose-500/10 border border-rose-500 text-rose-500 px-4 py-3 rounded-lg text-center text-sm">
-                {error}
-              </div>
-            )}
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1.5">
-                  Video Fayl
-                </label>
-                <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-cyan-950 rounded-lg hover:border-emerald-500/50 transition-colors">
-                  <div className="space-y-1 text-center">
-                    <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
-                      stroke="currentColor"
-                      fill="none"
-                      viewBox="0 0 48 48"
-                      aria-hidden="true"
+            {/* Video fayl tanlash */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                Video Fayl
+              </label>
+              <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-cyan-950 rounded-lg hover:border-emerald-500/50 transition-colors">
+                <div className="space-y-1 text-center">
+                  <svg
+                    className="mx-auto h-12 w-12 text-gray-400"
+                    stroke="currentColor"
+                    fill="none"
+                    viewBox="0 0 48 48"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <div className="text-sm text-gray-400">
+                    <label
+                      htmlFor="file-upload"
+                      className="relative cursor-pointer rounded-md font-medium text-emerald-400 hover:text-emerald-300"
                     >
-                      <path
-                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                        strokeWidth={2}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                      <span>Video faylni tanlang</span>
+                      <input
+                        id="file-upload"
+                        name="file-upload"
+                        type="file"
+                        accept="video/*"
+                        className="sr-only"
+                        onChange={handleFileChange}
+                        disabled={uploading}
                       />
-                    </svg>
-                    <div className="text-sm text-gray-400">
-                      <label
-                        htmlFor="file-upload"
-                        className="relative cursor-pointer rounded-md font-medium text-emerald-400 hover:text-emerald-300"
-                      >
-                        <span>Video faylni tanlang</span>
-                        <input
-                          id="file-upload"
-                          name="file-upload"
-                          type="file"
-                          accept="video/*"
-                          className="sr-only"
-                          onChange={handleFileChange}
-                        />
-                      </label>
-                    </div>
-                    <p className="text-xs text-gray-500">MP4, WebM, yoki MOV (max. 4GB)</p>
+                    </label>
                   </div>
+                  <p className="text-xs text-gray-500">MP4, WebM, yoki MOV (max. 4GB)</p>
                 </div>
-                {file && (
-                  <p className="mt-2 text-sm text-emerald-400">
-                    Tanlangan fayl: {file.name}
-                  </p>
-                )}
               </div>
+              {file && (
+                <p className="mt-2 text-sm text-emerald-400">
+                  Tanlangan fayl: {file.name}
+                </p>
+              )}
+            </div>
 
-              <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1.5">
-                  Sarlavha
-                </label>
-                <input
-                  type="text"
-                  id="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-[#1E293B]/60 backdrop-blur-sm rounded-lg border border-cyan-950 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                  placeholder="Video sarlavhasini kiriting"
-                  required
-                />
-              </div>
+            {/* Video nomi */}
+            <div>
+              <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1.5">
+                Sarlavha
+              </label>
+              <input
+                type="text"
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full px-4 py-2.5 bg-[#1E293B]/60 backdrop-blur-sm rounded-lg border border-cyan-950 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                placeholder="Video sarlavhasini kiriting"
+                required
+                disabled={uploading}
+              />
+            </div>
 
-              <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-1.5">
-                  Tavsif
-                </label>
-                <textarea
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={4}
-                  className="w-full px-4 py-2.5 bg-[#1E293B]/60 backdrop-blur-sm rounded-lg border border-cyan-950 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                  placeholder="Video haqida qisqacha ma'lumot"
-                />
-              </div>
+            {/* Video tavsifi */}
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-1.5">
+                Tavsif
+              </label>
+              <textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={4}
+                className="w-full px-4 py-2.5 bg-[#1E293B]/60 backdrop-blur-sm rounded-lg border border-cyan-950 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                placeholder="Video haqida qisqacha ma'lumot"
+                disabled={uploading}
+              />
+            </div>
 
-              <div>
-                <label htmlFor="categories" className="block text-sm font-medium text-gray-300 mb-1.5">
-                  Kategoriyalar
-                </label>
-                <input
-                  type="text"
-                  id="categories"
-                  value={categories}
-                  onChange={(e) => setCategories(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-[#1E293B]/60 backdrop-blur-sm rounded-lg border border-cyan-950 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                  placeholder="Kategoriyalarni vergul bilan ajrating"
-                />
+            {/* Kategoriyalar */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                Kategoriyalar
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {categoryList.map((category) => (
+                  <label
+                    key={category.id}
+                    className="flex items-center space-x-2 p-2 bg-gray-800 rounded cursor-pointer hover:bg-gray-700"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedCategories.includes(category.id)}
+                      onChange={() => handleCategoryChange(category.id)}
+                      disabled={uploading}
+                      className="form-checkbox text-blue-500"
+                    />
+                    <span>{category.name}</span>
+                  </label>
+                ))}
               </div>
             </div>
 
-            {isUploading && (
+            {/* Progress bar */}
+            {uploading && (
               <div className="relative pt-1">
                 <div className="flex mb-2 items-center justify-between">
                   <div>
@@ -177,13 +208,13 @@ export default function UploadPage() {
                   </div>
                   <div className="text-right">
                     <span className="text-xs font-semibold inline-block text-emerald-400">
-                      {uploadProgress}%
+                      {progress}%
                     </span>
                   </div>
                 </div>
                 <div className="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-emerald-400/20">
                   <div
-                    style={{ width: `${uploadProgress}%` }}
+                    style={{ width: `${progress}%` }}
                     className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-emerald-400"
                   ></div>
                 </div>
@@ -200,14 +231,14 @@ export default function UploadPage() {
               </button>
               <button
                 type="submit"
-                disabled={isUploading}
+                disabled={!file || uploading}
                 className={`px-6 py-2.5 rounded-lg text-center font-medium transition-all ${
-                  isUploading
+                  !file || uploading
                     ? 'bg-emerald-400/50 cursor-not-allowed'
                     : 'bg-gradient-to-r from-emerald-400 to-cyan-400 hover:from-cyan-400 hover:to-emerald-400 shadow-lg shadow-emerald-500/20'
                 }`}
               >
-                {isUploading ? 'Yuklanmoqda...' : 'Yuklash'}
+                {uploading ? 'Yuklanmoqda...' : 'Yuklash'}
               </button>
             </div>
           </form>

@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getVideos } from './utils/cloudflare';
 import type { VideoData } from './utils/cloudflare';
 import Navbar from './components/Navbar';
 import Link from 'next/link';
 
-export default function Home() {
+function VideoGrid() {
   const searchParams = useSearchParams();
   const [videos, setVideos] = useState<VideoData[]>([]);
   const [filteredVideos, setFilteredVideos] = useState<VideoData[]>([]);
@@ -265,6 +265,22 @@ export default function Home() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+        <div className="container mx-auto px-4 pt-24 pb-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+          </div>
+        </div>
+      </div>
+    }>
+      <VideoGrid />
+    </Suspense>
   );
 }
 

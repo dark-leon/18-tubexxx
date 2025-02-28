@@ -3,9 +3,20 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
-export default function Navbar() {
+interface NavbarProps {
+  onSearch: (query: string) => void;
+}
+
+export default function Navbar({ onSearch }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    onSearch(query);
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800 z-50">
@@ -13,7 +24,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="text-xl font-bold text-white flex-shrink-0">
-            TubeXXX
+            18-TubeXXX
           </Link>
 
           {/* Desktop menu */}
@@ -24,19 +35,19 @@ export default function Navbar() {
                   href="/"
                   className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  Asosiy
+                  Home
                 </Link>
                 <Link
                   href="/popular"
                   className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  Ommabop
+                  Popular
                 </Link>
                 <Link
                   href="/new"
                   className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  Yangi
+                  New
                 </Link>
               </div>
 
@@ -44,7 +55,9 @@ export default function Navbar() {
               <div className="relative flex-grow max-w-md ml-6">
                 <input
                   type="text"
-                  placeholder="Qidirish..."
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={handleSearch}
                   className="w-full bg-gray-800 text-white pl-4 pr-10 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
                 <button className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -133,7 +146,9 @@ export default function Navbar() {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Qidirish..."
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={handleSearch}
                 className="w-full bg-gray-800 text-white pl-4 pr-10 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
               <button className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -163,19 +178,19 @@ export default function Navbar() {
                 href="/"
                 className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
               >
-                Asosiy
+                Home
               </Link>
               <Link
                 href="/popular"
                 className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
               >
-                Ommabop
+                Popular
               </Link>
               <Link
                 href="/new"
                 className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
               >
-                Yangi
+                New
               </Link>
               <Link
                 href="/admin/login"

@@ -9,8 +9,9 @@ import { getCategories } from '../utils/categories';
 import Navbar from '../components/Navbar';
 import CategorySelect from '../components/CategorySelect';
 import Cookies from 'js-cookie';
+import Link from 'next/link';
 
-export default function AdminPage() {
+export default function AdminPanel() {
   const router = useRouter();
   const [videos, setVideos] = useState<VideoData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -94,12 +95,9 @@ export default function AdminPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
-        <Navbar />
-        <div className="container mx-auto px-4 pt-24 pb-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
-          </div>
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-4">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
         </div>
       </div>
     );
@@ -119,134 +117,121 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
       <Navbar />
-      <main className="container mx-auto px-4 pt-24 pb-8">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold">Admin Panel</h1>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg"
-          >
-            Chiqish
-          </button>
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+          <h1 className="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+            Admin Panel
+          </h1>
+          <div className="flex gap-4">
+            <Link
+              href="/"
+              className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-white transition-colors text-sm"
+            >
+              Back to Home
+            </Link>
+            <Link
+              href="/admin/upload"
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white transition-colors text-sm"
+            >
+              Upload Video
+            </Link>
+          </div>
         </div>
-        
-        <div className="grid gap-6">
-          {videos.map((video) => (
-            <div key={video.uid} className="bg-gray-800 rounded-lg p-6">
-              <div className="flex gap-6">
-                <div className="w-64 aspect-video relative rounded-lg overflow-hidden bg-gray-900">
-                  <iframe
-                    src={`https://iframe.videodelivery.net/${video.uid}`}
-                    className="w-full h-full absolute top-0 left-0"
-                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                  />
-                </div>
-                
-                <div className="flex-1">
-                  {editingVideo?.uid === video.uid ? (
-                    <div className="space-y-4">
-                      <input
-                        type="text"
-                        value={editingVideo.meta.name}
-                        onChange={(e) => setEditingVideo({
-                          ...editingVideo,
-                          meta: { ...editingVideo.meta, name: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 bg-gray-700 rounded-lg"
-                        placeholder="Video nomi"
-                      />
-                      <textarea
-                        value={editingVideo.meta.description || ''}
-                        onChange={(e) => setEditingVideo({
-                          ...editingVideo,
-                          meta: { ...editingVideo.meta, description: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 bg-gray-700 rounded-lg"
-                        placeholder="Tavsif"
-                        rows={3}
-                      />
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-400">
-                          Kategoriyalar
-                        </label>
-                        <CategorySelect
-                          selectedCategories={editingVideo.meta.categories ? editingVideo.meta.categories.split(',') : []}
-                          onChange={(categories) => setEditingVideo({
-                            ...editingVideo,
-                            meta: { ...editingVideo.meta, categories: categories.join(',') }
-                          })}
-                        />
+
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gray-900/50">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    Video
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider hidden sm:table-cell">
+                    Duration
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider hidden md:table-cell">
+                    Views
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider hidden lg:table-cell">
+                    Category
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800">
+                {videos.map((video) => (
+                  <tr key={video.uid} className="hover:bg-gray-700/30">
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex-shrink-0 w-24 h-16 relative rounded overflow-hidden">
+                          <iframe
+                            src={`https://iframe.videodelivery.net/${video.uid}`}
+                            className="absolute inset-0 w-full h-full"
+                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-white truncate max-w-xs">
+                            {video.meta.name || 'Untitled video'}
+                          </p>
+                          <p className="text-sm text-gray-400 truncate">
+                            ID: {video.uid}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleUpdateVideo(video, editingVideo.meta)}
-                          className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg"
-                        >
-                          Saqlash
-                        </button>
-                        <button
-                          onClick={() => setEditingVideo(null)}
-                          className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg"
-                        >
-                          Bekor qilish
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-semibold">{video.meta.name}</h2>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => setEditingVideo(video)}
-                            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg"
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap hidden sm:table-cell">
+                      <span className="text-sm text-gray-300">
+                        {Math.floor(video.duration / 60)}:{String(
+                          Math.floor(video.duration % 60)
+                        ).padStart(2, '0')}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap hidden md:table-cell">
+                      <span className="text-sm text-gray-300">
+                        {video.meta.views || '0'} views
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap hidden lg:table-cell">
+                      <div className="flex flex-wrap gap-1">
+                        {video.meta.category?.split(', ').map((category, index) => (
+                          <span
+                            key={index}
+                            className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-400/10 text-purple-400"
                           >
-                            Tahrirlash
-                          </button>
-                          <button
-                            onClick={() => handleDeleteVideo(video.uid)}
-                            disabled={deletingVideo === video.uid}
-                            className={`px-4 py-2 rounded-lg ${
-                              deletingVideo === video.uid
-                                ? 'bg-red-800 cursor-not-allowed'
-                                : 'bg-red-600 hover:bg-red-700'
-                            }`}
-                          >
-                            {deletingVideo === video.uid ? 'O\'chirilmoqda...' : 'O\'chirish'}
-                          </button>
-                        </div>
+                            {category}
+                          </span>
+                        ))}
                       </div>
-                      {video.meta.description && (
-                        <p className="text-gray-400 mb-4">{video.meta.description}</p>
-                      )}
-                      <div className="grid grid-cols-4 gap-4 text-sm">
-                        <div className="bg-gray-700 p-3 rounded-lg">
-                          <div className="text-gray-400">Ko'rishlar</div>
-                          <div className="text-lg font-semibold">{video.meta.views}</div>
-                        </div>
-                        <div className="bg-gray-700 p-3 rounded-lg">
-                          <div className="text-gray-400">Like lar</div>
-                          <div className="text-lg font-semibold">{video.meta.likes}</div>
-                        </div>
-                        <div className="bg-gray-700 p-3 rounded-lg">
-                          <div className="text-gray-400">Dislike lar</div>
-                          <div className="text-lg font-semibold">{video.meta.dislikes}</div>
-                        </div>
-                        <div className="bg-gray-700 p-3 rounded-lg">
-                          <div className="text-gray-400">Kategoriyalar</div>
-                          <div className="text-lg font-semibold">
-                            {video.meta.categories ? video.meta.categories.split(',').join(', ') : '-'}
-                          </div>
-                        </div>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-300">
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/admin/edit/${video.uid}`}
+                          className="text-purple-400 hover:text-purple-300 transition-colors"
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          onClick={() => handleDeleteVideo(video.uid)}
+                          disabled={deletingVideo === video.uid}
+                          className={`text-red-400 hover:text-red-300 transition-colors ${
+                            deletingVideo === video.uid ? 'cursor-not-allowed' : ''
+                          }`}
+                        >
+                          Delete
+                        </button>
                       </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 } 

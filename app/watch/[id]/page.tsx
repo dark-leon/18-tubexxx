@@ -1,20 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { use } from 'react';
 import { getVideos, incrementViews, handleLike, handleDislike } from '../../utils/cloudflare';
 import type { VideoData } from '../../utils/cloudflare';
 import Navbar from '../../components/Navbar';
 import Link from 'next/link';
 
 interface PageProps {
-  params: Promise<{
+  params: {
     id: string;
-  }>;
+  };
 }
 
 export default function WatchPage({ params }: PageProps) {
-  const { id } = use(params);
+  const { id } = params;
   const [currentVideo, setCurrentVideo] = useState<VideoData | null>(null);
   const [recommendedVideos, setRecommendedVideos] = useState<VideoData[]>([]);
   const [isLoading, setIsLoading] = useState(true);

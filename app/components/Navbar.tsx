@@ -3,116 +3,72 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
-interface NavbarProps {
-  onSearch: (query: string) => void;
-}
-
-export default function Navbar({ onSearch }: NavbarProps) {
+export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    onSearch(query);
-  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="text-xl font-bold text-white flex-shrink-0">
-            18-TubeXXX
+          <Link href="/" className="text-xl font-bold text-white">
+            TubeXXX
           </Link>
 
           {/* Desktop menu */}
-          <div className="hidden lg:block flex-grow max-w-2xl mx-8">
-            <div className="flex items-center justify-between">
-              <div className="flex items-baseline space-x-4">
-                <Link
-                  href="/"
-                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  Home
-                </Link>
-                <Link
-                  href="/popular"
-                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  Popular
-                </Link>
-                <Link
-                  href="/new"
-                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  New
-                </Link>
-              </div>
-
-              {/* Desktop Search */}
-              <div className="relative flex-grow max-w-md ml-6">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={handleSearch}
-                  className="w-full bg-gray-800 text-white pl-4 pr-10 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-                <button className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <svg
-                    className="w-5 h-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                </button>
-              </div>
+          <div className="hidden md:block">
+            <div className="ml-10 flex items-baseline space-x-4">
+              <Link
+                href="/"
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Asosiy
+              </Link>
+              <Link
+                href="/popular"
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Ommabop
+              </Link>
+              <Link
+                href="/new"
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Yangi
+              </Link>
             </div>
           </div>
 
-          {/* Mobile buttons */}
-          <div className="flex items-center space-x-4 lg:space-x-6">
-            {/* Mobile search button */}
-            <button
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="lg:hidden text-gray-400 hover:text-white focus:outline-none"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </button>
+          {/* Search */}
+          <div className="flex items-center">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Qidirish..."
+                className="bg-gray-800 text-white pl-4 pr-10 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 w-48"
+              />
+              <button className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <svg
+                  className="w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
 
-            {/* Admin Panel button */}
-            <Link
-              href="/admin/login"
-              className="hidden sm:block px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white transition-colors text-sm"
-            >
-              Admin Panel
-            </Link>
-
-            {/* Mobile menu button */}
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden text-gray-400 hover:text-white focus:outline-none"
+              className="text-gray-400 hover:text-white focus:outline-none"
             >
               <svg
                 className="h-6 w-6"
@@ -138,65 +94,38 @@ export default function Navbar({ onSearch }: NavbarProps) {
               </svg>
             </button>
           </div>
-        </div>
 
-        {/* Mobile search bar */}
-        {isSearchOpen && (
-          <div className="lg:hidden px-2 pb-3">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={handleSearch}
-                className="w-full bg-gray-800 text-white pl-4 pr-10 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-              <button className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <svg
-                  className="w-5 h-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </button>
-            </div>
+          <div className="flex items-center space-x-4">
+            <Link
+              href="/admin/login"
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white transition-colors"
+            >
+              Admin Panel
+            </Link>
           </div>
-        )}
+        </div>
 
         {/* Mobile menu */}
         {isMenuOpen && (
-          <div className="lg:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1">
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               <Link
                 href="/"
                 className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
               >
-                Home
+                Asosiy
               </Link>
               <Link
                 href="/popular"
                 className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
               >
-                Popular
+                Ommabop
               </Link>
               <Link
                 href="/new"
                 className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
               >
-                New
-              </Link>
-              <Link
-                href="/admin/login"
-                className="sm:hidden text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-              >
-                Admin Panel
+                Yangi
               </Link>
             </div>
           </div>

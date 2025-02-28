@@ -2,60 +2,49 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
-    const apiToken = process.env.CLOUDFLARE_API_TOKEN;
-
-    if (!accountId || !apiToken) {
-      console.error('Missing env vars:', { accountId, apiToken });
-      throw new Error('Cloudflare API kalitlari topilmadi');
-    }
-
     const { metadata } = await request.json();
 
-    // Get direct upload URL
-    const response = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${accountId}/stream/direct_upload`,
+    // TUS upload URL olish
+    const tusResponse = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream?direct_user=true`,
       {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${apiToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          maxDurationSeconds: 3600,
-          meta: metadata,
-          allowedOrigins: ['*']
-        }),
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_CLOUDFLARE_API_TOKEN}`,
+          'Tus-Resumable': '1.0.0',
+        }
       }
     );
 
-    const data = await response.json();
-    console.log('Cloudflare API response:', data);
-
-    if (!response.ok) {
-      console.error('Cloudflare API error:', data);
+    if (!tusResponse.ok) {
+      console.error('TUS initialization error:', await tusResponse.text());
       return NextResponse.json(
-        { error: data.errors?.[0]?.message || 'Cloudflare API xatosi' },
-        { status: response.status }
-      );
-    }
-    
-    if (!data.success || !data.result?.uploadURL) {
-      console.error('Invalid Cloudflare response:', data);
-      return NextResponse.json(
-        { error: 'Noto\'g\'ri API javobi' },
+        { error: 'Video yuklashni boshlashda xatolik' },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({
-      uploadURL: data.result.uploadURL,
-      uid: data.result.uid
-    });
-  } catch (error: any) {
-    console.error('Error getting upload URL:', error);
+    const uploadURL = tusResponse.headers.get('Location');
+    if (!uploadURL) {
+      return NextResponse.json(
+        { error: 'Upload URL olinmadi' },
+        { status: 500 }
+      );
+    }
+
+    const uid = uploadURL.split('/').pop();
+    if (!uid) {
+      return NextResponse.json(
+        { error: 'Video ID olinmadi' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ uploadURL, uid });
+  } catch (error) {
+    console.error('Upload URL error:', error);
     return NextResponse.json(
-      { error: error.message || 'Server xatosi' },
+      { error: 'Video yuklash URL olishda xatolik' },
       { status: 500 }
     );
   }

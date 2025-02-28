@@ -157,117 +157,146 @@ export async function uploadVideo(
   metadata: VideoMeta,
   onProgress?: (progress: number) => void
 ): Promise<UploadResult> {
-  try {
-    // 1. Cloudflare Stream API ga to'g'ridan-to'g'ri yuklash
+  return new Promise((resolve, reject) => {
+    // 1. XMLHttpRequest yaratish
+    const xhr = new XMLHttpRequest();
+    
+    // Progress ni kuzatish
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable && onProgress) {
+        const progress = Math.round((event.loaded / event.total) * 70);
+        onProgress(progress);
+      }
+    };
+
+    // Yuklash tugaganda
+    xhr.onload = async () => {
+      try {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          const result = JSON.parse(xhr.responseText);
+          
+          if (!result.success || !result.result?.uid) {
+            reject(new Error('Video yuklashda xatolik yuz berdi'));
+            return;
+          }
+
+          const videoId = result.result.uid;
+          
+          // 2. Meta ma'lumotlarni yangilash
+          const metaResponse = await fetch(
+            `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream/${videoId}`,
+            {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${process.env.NEXT_PUBLIC_CLOUDFLARE_API_TOKEN}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                meta: {
+                  name: metadata.name || 'Nomsiz video',
+                  description: metadata.description || '',
+                  category: metadata.category || '',
+                  categories: metadata.categories || '',
+                  views: '0',
+                  likes: '0',
+                  dislikes: '0',
+                  uploadedAt: new Date().toISOString()
+                }
+              })
+            }
+          );
+
+          if (!metaResponse.ok) {
+            console.error('Meta ma\'lumotlarni yangilashda xatolik:', await metaResponse.text());
+          }
+
+          // 3. Video holatini tekshirish
+          let attempts = 0;
+          const maxAttempts = 30;
+          const pollInterval = 2000;
+
+          const checkStatus = async () => {
+            if (attempts >= maxAttempts) {
+              resolve({
+                uid: videoId,
+                thumbnail: '',
+                playback: { hls: '', dash: '' },
+                status: { state: 'processing', pctComplete: 100 }
+              });
+              return;
+            }
+
+            try {
+              const statusResponse = await fetch(
+                `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream/${videoId}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${process.env.NEXT_PUBLIC_CLOUDFLARE_API_TOKEN}`
+                  }
+                }
+              );
+
+              if (statusResponse.ok) {
+                const status = await statusResponse.json();
+
+                if (status.result?.readyToStream) {
+                  if (onProgress) onProgress(100);
+                  resolve({
+                    uid: videoId,
+                    thumbnail: status.result.thumbnail || '',
+                    playback: {
+                      hls: status.result.playback?.hls || '',
+                      dash: status.result.playback?.dash || '',
+                    },
+                    status: {
+                      state: 'ready',
+                      pctComplete: 100,
+                    },
+                  });
+                  return;
+                }
+
+                // Progress ni yangilash (70-95%)
+                if (onProgress) {
+                  const processingProgress = Math.min(95, 70 + (attempts * 25 / maxAttempts));
+                  onProgress(processingProgress);
+                }
+              }
+
+              attempts++;
+              await new Promise(resolve => setTimeout(resolve, pollInterval));
+              await checkStatus();
+            } catch (error) {
+              console.error('Video holatini tekshirishda xatolik:', error);
+              resolve({
+                uid: videoId,
+                thumbnail: '',
+                playback: { hls: '', dash: '' },
+                status: { state: 'processing', pctComplete: 100 }
+              });
+            }
+          };
+
+          await checkStatus();
+        } else {
+          reject(new Error('Video yuklashda xatolik yuz berdi'));
+        }
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    // Xatolik yuz berganda
+    xhr.onerror = () => {
+      reject(new Error('Video yuklashda tarmoq xatosi yuz berdi'));
+    };
+
+    // 4. Video yuklash
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_CLOUDFLARE_API_TOKEN}`,
-        },
-        body: formData
-      }
-    );
-
-    if (!response.ok) {
-      const error = await response.json();
-      console.error('Upload error:', error);
-      throw new Error('Video yuklashda xatolik yuz berdi');
-    }
-
-    const result = await response.json();
-    console.log('Upload result:', result);
-
-    if (!result.success || !result.result?.uid) {
-      throw new Error('Video yuklashda xatolik yuz berdi');
-    }
-
-    const videoId = result.result.uid;
-
-    // 2. Video metama'lumotlarini yangilash
-    const metaResponse = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream/${videoId}`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_CLOUDFLARE_API_TOKEN}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          meta: {
-            name: metadata.name || 'Nomsiz video',
-            description: metadata.description || '',
-            category: metadata.category || '',
-            categories: metadata.categories || '',
-            views: '0',
-            likes: '0',
-            dislikes: '0',
-            uploadedAt: new Date().toISOString()
-          }
-        })
-      }
-    );
-
-    if (!metaResponse.ok) {
-      console.error('Metadata update error:', await metaResponse.text());
-    }
-
-    // 3. Video holatini tekshirish
-    let attempts = 0;
-    const maxAttempts = 30; // 1 minut
-    const pollInterval = 2000; // 2 sekund
-
-    while (attempts < maxAttempts) {
-      const statusResponse = await fetch(
-        `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream/${videoId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_CLOUDFLARE_API_TOKEN}`
-          }
-        }
-      );
-
-      if (statusResponse.ok) {
-        const status = await statusResponse.json();
-        console.log('Video status:', status);
-
-        if (status.result?.readyToStream) {
-          return {
-            uid: videoId,
-            thumbnail: status.result.thumbnail || '',
-            playback: {
-              hls: status.result.playback?.hls || '',
-              dash: status.result.playback?.dash || '',
-            },
-            status: {
-              state: 'ready',
-              pctComplete: 100,
-            },
-          };
-        }
-
-        if (status.result?.status?.state === 'error') {
-          throw new Error('Video qayta ishlashda xatolik yuz berdi');
-        }
-      }
-
-      attempts++;
-      await new Promise(resolve => setTimeout(resolve, pollInterval));
-    }
-
-    // Vaqt tugadi, lekin video hali ham qayta ishlanmoqda
-    return {
-      uid: videoId,
-      thumbnail: '',
-      playback: { hls: '', dash: '' },
-      status: { state: 'processing', pctComplete: 100 }
-    };
-  } catch (error) {
-    console.error('Upload error:', error);
-    throw error;
-  }
-} 
+    xhr.open('POST', `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream`);
+    xhr.setRequestHeader('Authorization', `Bearer ${process.env.NEXT_PUBLIC_CLOUDFLARE_API_TOKEN}`);
+    xhr.send(formData);
+  });
+}

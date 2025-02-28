@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { getVideos, incrementViews, handleLike, handleDislike } from '../../utils/cloudflare';
 import type { VideoData } from '../../utils/cloudflare';
 import Navbar from '../../components/Navbar';
@@ -13,11 +14,13 @@ interface PageProps {
 }
 
 export default function WatchPage({ params }: PageProps) {
+  const router = useRouter();
   const { id } = params;
   const [currentVideo, setCurrentVideo] = useState<VideoData | null>(null);
   const [recommendedVideos, setRecommendedVideos] = useState<VideoData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,10 +33,10 @@ export default function WatchPage({ params }: PageProps) {
           setCurrentVideo(updatedVideo);
           setRecommendedVideos(videos.filter((v) => v.uid !== id));
         } else {
-          setError('Video topilmadi');
+          setError('Video not found');
         }
       } catch (err) {
-        setError('Xatolik yuz berdi');
+        setError('An error occurred');
         console.error(err);
       } finally {
         setIsLoading(false);
@@ -43,13 +46,18 @@ export default function WatchPage({ params }: PageProps) {
     fetchData();
   }, [id]);
 
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    router.push(`/?search=${encodeURIComponent(query)}`);
+  };
+
   const onLike = async () => {
     if (!currentVideo) return;
     try {
       const updatedVideo = await handleLike(currentVideo.uid, currentVideo.meta.likes || '0');
       setCurrentVideo(updatedVideo);
     } catch (err) {
-      console.error('Like qo\'yishda xatolik:', err);
+      console.error('Error adding like:', err);
     }
   };
 
@@ -59,14 +67,14 @@ export default function WatchPage({ params }: PageProps) {
       const updatedVideo = await handleDislike(currentVideo.uid, currentVideo.meta.dislikes || '0');
       setCurrentVideo(updatedVideo);
     } catch (err) {
-      console.error('Dislike qo\'yishda xatolik:', err);
+      console.error('Error adding dislike:', err);
     }
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
-        <Navbar />
+        <Navbar onSearch={handleSearch} />
         <div className="container mx-auto px-4 pt-24 pb-8">
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
@@ -79,9 +87,17 @@ export default function WatchPage({ params }: PageProps) {
   if (error || !currentVideo) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
-        <Navbar />
+        <Navbar onSearch={handleSearch} />
         <div className="container mx-auto px-4 pt-24 pb-8">
-          <div className="text-center text-xl text-red-500">{error}</div>
+          <div className="text-center">
+            <div className="text-xl text-red-500 mb-4">{error || 'Video not found'}</div>
+            <Link
+              href="/"
+              className="inline-block px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white transition-colors"
+            >
+              Back to Home
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -89,7 +105,7 @@ export default function WatchPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
-      <Navbar />
+      <Navbar onSearch={handleSearch} />
       <main className="container mx-auto px-4 pt-24 pb-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Video player section */}
@@ -104,7 +120,7 @@ export default function WatchPage({ params }: PageProps) {
             </div>
             <div className="mt-4">
               <h1 className="text-2xl font-bold text-white">
-                {currentVideo.meta.name || 'Nomsiz video'}
+                {currentVideo.meta.name || 'Untitled video'}
               </h1>
               {currentVideo.meta.description && (
                 <p className="mt-2 text-gray-400">{currentVideo.meta.description}</p>
@@ -131,7 +147,7 @@ export default function WatchPage({ params }: PageProps) {
                         d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                       />
                     </svg>
-                    {currentVideo.meta.views || '0'} ko'rishlar
+                    {currentVideo.meta.views || '0'} views
                   </span>
                   <span className="flex items-center">
                     <svg
@@ -206,7 +222,7 @@ export default function WatchPage({ params }: PageProps) {
 
           {/* Recommended videos section */}
           <div className="lg:col-span-1">
-            <h2 className="text-xl font-semibold mb-4 text-gray-200">Tavsiya etilgan videolar</h2>
+            <h2 className="text-xl font-semibold mb-4 text-gray-200">Recommended Videos</h2>
             <div className="grid grid-cols-1 gap-4">
               {recommendedVideos.map((video) => (
                 <Link
@@ -223,10 +239,10 @@ export default function WatchPage({ params }: PageProps) {
                   </div>
                   <div className="flex flex-col flex-1">
                     <h3 className="font-medium text-white line-clamp-2">
-                      {video.meta.name || 'Nomsiz video'}
+                      {video.meta.name || 'Untitled video'}
                     </h3>
                     <div className="flex items-center text-sm text-gray-400 mt-1 space-x-2">
-                      <span>{video.meta.views || '0'} ko'rishlar</span>
+                      <span>{video.meta.views || '0'} views</span>
                       <span>•</span>
                       <span>
                         {Math.floor(video.duration / 60)}:

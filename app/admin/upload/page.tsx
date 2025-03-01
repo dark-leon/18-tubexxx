@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useRef, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef, FormEvent, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Navbar from '../../components/Navbar';
 import { uploadVideo } from '@/app/utils/cloudflare';
 import { categoryList } from '@/app/utils/categories';
 
-export default function UploadPage() {
+function UploadPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -245,5 +246,22 @@ export default function UploadPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function UploadPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#030712] text-white">
+        <Navbar />
+        <div className="container mx-auto px-4 pt-24 pb-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+          </div>
+        </div>
+      </div>
+    }>
+      <UploadPageContent />
+    </Suspense>
   );
 } 

@@ -176,6 +176,16 @@ export default function WatchPage({ params }: PageProps) {
                 className="w-full h-full absolute top-0 left-0"
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
+                loading="lazy"
+                onLoad={(e) => {
+                  const iframe = e.target as HTMLIFrameElement;
+                  if (iframe.contentWindow) {
+                    iframe.contentWindow.postMessage(
+                      { type: 'setPlaybackQuality', value: 'auto' },
+                      '*'
+                    );
+                  }
+                }}
               />
             </div>
             <div className="space-y-4">

@@ -23,6 +23,9 @@ export default function WatchPage({ params }: PageProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [hasLiked, setHasLiked] = useState(false);
   const [hasDisliked, setHasDisliked] = useState(false);
+  const [showCopyNotification, setShowCopyNotification] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const [isNativeShareSupported, setIsNativeShareSupported] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,6 +82,26 @@ export default function WatchPage({ params }: PageProps) {
 
     fetchData();
   }, [id]);
+
+  // Check if native share is supported
+  useEffect(() => {
+    setIsNativeShareSupported(!!navigator.share);
+  }, []);
+
+  // Native share handler
+  const handleNativeShare = async () => {
+    try {
+      await navigator.share({
+        title: currentVideo?.meta.name || 'Check out this video',
+        text: currentVideo?.meta.description || 'Interesting video to watch',
+        url: window.location.href
+      });
+    } catch (err) {
+      console.error('Error sharing:', err);
+      // Fallback to custom share menu if native share fails
+      setShowShareMenu(true);
+    }
+  };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -212,6 +235,83 @@ export default function WatchPage({ params }: PageProps) {
                   {String(Math.floor(currentVideo.duration % 60)).padStart(2, '0')}
                 </span>
                 <div className="flex items-center gap-4 ml-auto">
+                  <div className="relative">
+                    <button
+                      onClick={() => {
+                        if (isNativeShareSupported) {
+                          handleNativeShare();
+                        } else {
+                          setShowShareMenu(!showShareMenu);
+                        }
+                      }}
+                      className="group relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all text-gray-400 hover:text-white hover:bg-gradient-to-r hover:from-emerald-400 hover:to-cyan-400 hover:shadow-lg hover:shadow-emerald-500/20"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                      </svg>
+                      <span>Share</span>
+                    </button>
+                    
+                    {/* Custom share menu (shown only when native share is not supported) */}
+                    {!isNativeShareSupported && showShareMenu && (
+                      <div className="absolute right-0 mt-2 w-56 rounded-lg bg-[#1F2937] shadow-lg ring-1 ring-cyan-950 z-50">
+                        <div className="p-2 space-y-1">
+                          <button
+                            onClick={() => {
+                              const url = encodeURIComponent(window.location.href);
+                              const text = encodeURIComponent(currentVideo?.meta.name || 'Check out this video');
+                              window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
+                            }}
+                            className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-[#374151] rounded-lg transition-all"
+                          >
+                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2c5.514 0 10 4.486 10 10s-4.486 10-10 10S2 17.514 2 12 6.486 2 12 2zm-2 14.5v-7l6 3.5-6 3.5z"/>
+                            </svg>
+                            Telegram orqali ulashish
+                          </button>
+                          
+                          <button
+                            onClick={() => {
+                              const url = encodeURIComponent(window.location.href);
+                              window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+                            }}
+                            className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-[#374151] rounded-lg transition-all"
+                          >
+                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                            Facebook orqali ulashish
+                          </button>
+
+                          <button
+                            onClick={async () => {
+                              try {
+                                const url = window.location.href;
+                                await navigator.clipboard.writeText(url);
+                                setShowCopyNotification(true);
+                                setTimeout(() => setShowCopyNotification(false), 2000);
+                                setShowShareMenu(false);
+                              } catch (err) {
+                                console.error('Failed to copy:', err);
+                              }
+                            }}
+                            className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-[#374151] rounded-lg transition-all"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                            </svg>
+                            URL manzilni nusxalash
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {showCopyNotification && (
+                      <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-emerald-400 text-white text-sm rounded shadow-lg whitespace-nowrap">
+                        URL nusxalandi!
+                      </div>
+                    )}
+                  </div>
                   <button
                     onClick={onLike}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${

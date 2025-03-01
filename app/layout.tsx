@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-export const metadata = {
+export const metadata: Metadata = {
   metadataBase: new URL('https://www.18-tubexxx.com'),
-  title: '18+ Adult Videos - Watch and Download HD Porn Videos | TubeXXX',
-  description: 'Watch and download free HD adult videos. Best quality porn videos online. New adult content added daily. Large collection of XXX videos in HD quality.',
-  keywords: 'adult videos, porn videos, free porn, HD porn, streaming porn, download porn, xxx videos, adult content, porn tube, free adult videos',
+  title: '18+ Free Adult Videos - Watch HD Porn Videos Online',
+  description: 'Watch free adult videos in HD quality. Stream or download porn videos featuring amateur, anal, asian, big ass, big tits, blowjob, and more categories.',
+  keywords: 'porn videos, adult videos, xxx videos, free porn, hd porn, streaming porn, download porn',
   openGraph: {
-    title: '18+ Adult Videos - Watch and Download HD Porn Videos | TubeXXX',
-    description: 'Watch and download free HD adult videos. Best quality porn videos online. New adult content added daily. Large collection of XXX videos in HD quality.',
+    title: '18+ Free Adult Videos - Watch HD Porn Videos Online',
+    description: 'Watch free adult videos in HD quality. Stream or download porn videos featuring amateur, anal, asian, big ass, big tits, blowjob, and more categories.',
     type: 'website',
     locale: 'en_US',
     url: 'https://www.18-tubexxx.com',
@@ -24,8 +24,8 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: '18+ Adult Videos - TubeXXX',
-    description: 'Watch and download free HD adult videos. Best quality porn videos online.',
+    title: '18+ Free Adult Videos - Watch HD Porn Videos Online',
+    description: 'Watch free adult videos in HD quality. Stream or download porn videos featuring amateur, anal, asian, big ass, big tits, blowjob, and more categories.',
     images: ['https://www.18-tubexxx.com/twitter-image.jpg']
   },
   robots: {

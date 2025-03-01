@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata = {
+  metadataBase: new URL('https://yourdomain.com'),
   title: '18+ Adult Videos - Watch and Download HD Porn Videos | TubeXXX',
   description: 'Watch and download free HD adult videos. Best quality porn videos online. New adult content added daily. Large collection of XXX videos in HD quality.',
   keywords: 'adult videos, porn videos, free porn, HD porn, streaming porn, download porn, xxx videos, adult content, porn tube, free adult videos',

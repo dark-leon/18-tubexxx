@@ -2,7 +2,7 @@ import { getVideos } from './utils/cloudflare';
 
 export default async function sitemap() {
   const videos = await getVideos();
-  const baseUrl = 'https://yourdomain.com';
+  const baseUrl = 'https://www.18-tubexxx.com';
 
   // Asosiy sahifalar
   const routes = [''].map((route) => ({

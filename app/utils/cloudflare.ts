@@ -67,11 +67,46 @@ export async function getVideos(): Promise<VideoData[]> {
   }
 }
 
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+}
+
+export const defaultCategories: Category[] = [
+  {
+    id: 'amateur',
+    name: 'Amateur',
+    slug: 'amateur',
+    description: 'Amateur videos'
+  },
+  {
+    id: 'anal',
+    name: 'Anal',
+    slug: 'anal',
+    description: 'Anal videos'
+  },
+  {
+    id: 'asian',
+    name: 'Asian',
+    slug: 'asian',
+    description: 'Asian videos'
+  },
+  {
+    id: 'bdsm',
+    name: 'BDSM',
+    slug: 'bdsm',
+    description: 'BDSM videos'
+  }
+];
+
 interface VideoMeta {
   name?: string;
   description?: string;
   category?: string;
   categories?: string;
+  tags?: string[];
   views?: string;
   likes?: string;
   dislikes?: string;

@@ -101,15 +101,15 @@ export const defaultCategories: Category[] = [
   }
 ];
 
-interface VideoMeta {
+export interface VideoMeta {
   name?: string;
-  description?: string;
-  category?: string;
-  categories?: string;
-  tags?: string[];
   views?: string;
   likes?: string;
   dislikes?: string;
+  description?: string;
+  category?: string;
+  categories?: string;
+  tags?: string;
   uploadedAt?: string;
 }
 

@@ -27,13 +27,42 @@ export default function WatchPage({ params }: PageProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const videos = await getVideos();
         const video = videos.find((v) => v.uid === id);
+        
         if (video) {
-          const updatedVideo = await incrementViews(video.uid, video.meta.views || '0');
-          setCurrentVideo(updatedVideo);
-          setRecommendedVideos(videos.filter((v) => v.uid !== id));
+          // Ko'rishlar sonini yangilash
+          const newViews = (parseInt(video.meta.views || '0') + 1).toString();
+          await incrementViews(video.uid, video.meta.views || '0');
           
+          // Video ma'lumotlarini yangilash
+          const updatedVideo = {
+            ...video,
+            meta: {
+              ...video.meta,
+              views: newViews
+            }
+          };
+          setCurrentVideo(updatedVideo);
+          
+          // O'xshash videolarni filtrlash
+          const filtered = videos
+            .filter((v) => v.uid !== id)
+            .filter((v) => {
+              if (video.meta.category) {
+                const currentCategories = video.meta.category.toLowerCase().split(',').map(c => c.trim());
+                const videoCategories = v.meta.category?.toLowerCase().split(',').map(c => c.trim()) || [];
+                return currentCategories.some(cat => videoCategories.includes(cat));
+              }
+              return true;
+            })
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 12);
+          
+          setRecommendedVideos(filtered);
+          
+          // Like/Dislike holatini tekshirish
           const likeStatus = localStorage.getItem(`video_${id}_like_status`);
           if (likeStatus === 'liked') setHasLiked(true);
           if (likeStatus === 'disliked') setHasDisliked(true);
@@ -41,8 +70,8 @@ export default function WatchPage({ params }: PageProps) {
           setError('Video not found');
         }
       } catch (err) {
+        console.error('Error fetching video:', err);
         setError('An error occurred');
-        console.error(err);
       } finally {
         setIsLoading(false);
       }
@@ -59,8 +88,15 @@ export default function WatchPage({ params }: PageProps) {
   const onLike = async () => {
     if (!currentVideo || hasLiked) return;
     try {
-      const updatedVideo = await handleLike(currentVideo.uid, currentVideo.meta.likes || '0');
-      setCurrentVideo(updatedVideo);
+      const newLikes = (parseInt(currentVideo.meta.likes || '0') + 1).toString();
+      await handleLike(currentVideo.uid, currentVideo.meta.likes || '0');
+      setCurrentVideo({
+        ...currentVideo,
+        meta: {
+          ...currentVideo.meta,
+          likes: newLikes
+        }
+      });
       setHasLiked(true);
       setHasDisliked(false);
       localStorage.setItem(`video_${id}_like_status`, 'liked');
@@ -72,8 +108,15 @@ export default function WatchPage({ params }: PageProps) {
   const onDislike = async () => {
     if (!currentVideo || hasDisliked) return;
     try {
-      const updatedVideo = await handleDislike(currentVideo.uid, currentVideo.meta.dislikes || '0');
-      setCurrentVideo(updatedVideo);
+      const newDislikes = (parseInt(currentVideo.meta.dislikes || '0') + 1).toString();
+      await handleDislike(currentVideo.uid, currentVideo.meta.dislikes || '0');
+      setCurrentVideo({
+        ...currentVideo,
+        meta: {
+          ...currentVideo.meta,
+          dislikes: newDislikes
+        }
+      });
       setHasDisliked(true);
       setHasLiked(false);
       localStorage.setItem(`video_${id}_like_status`, 'disliked');

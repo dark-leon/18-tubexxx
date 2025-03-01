@@ -60,9 +60,17 @@ function VideoGrid() {
     fetchVideos();
   }, []);
 
+  // Bu useEffect-ni olib tashlaymiz chunki fetchVideos o'zi filtrlashni bajaradi
+  // useEffect(() => {
+  //   filterVideos(searchQuery, activeFilter);
+  // }, [videos, searchQuery, activeFilter]);
+
+  // Faqat qidiruv yoki filter o'zgarganda ishlaydigan useEffect
   useEffect(() => {
-    filterVideos(searchQuery, activeFilter);
-  }, [videos, searchQuery, activeFilter]);
+    if (videos.length > 0) {
+      filterVideos(searchQuery, activeFilter);
+    }
+  }, [searchQuery, activeFilter]);
 
   useEffect(() => {
     updateDisplayedVideos();
@@ -93,9 +101,20 @@ function VideoGrid() {
 
   const fetchVideos = async () => {
     try {
+      setIsLoading(true);
       const data = await getVideos();
       setVideos(data);
-      filterVideos(searchQuery, activeFilter, data);
+      
+      // Dastlabki holatda barcha videolarni ko'rsatamiz
+      const sortedData = [...data].sort((a, b) => {
+        const dateA = new Date(a.meta.uploadedAt || a.created);
+        const dateB = new Date(b.meta.uploadedAt || b.created);
+        return dateB.getTime() - dateA.getTime();
+      });
+      
+      setFilteredVideos(sortedData);
+      setDisplayedVideos(sortedData.slice(0, videosPerPage));
+      setHasMore(sortedData.length > videosPerPage);
     } catch (err) {
       setError('Error loading videos');
       console.error(err);
@@ -105,6 +124,8 @@ function VideoGrid() {
   };
 
   const filterVideos = (query: string, filter: string, videoList = videos) => {
+    setIsLoading(true); // Filtrlash boshlanishida loading holatini yoqamiz
+    
     let filtered = [...videoList];
 
     if (query) {
@@ -196,8 +217,15 @@ function VideoGrid() {
     }
 
     setFilteredVideos(filtered);
-    // Sahifani qayta 1 ga o'rnatish
+    // Sahifani qayta 1 ga o'rnatish va dastlabki videolarni ko'rsatish
     setPage(1);
+    setDisplayedVideos(filtered.slice(0, videosPerPage));
+    setHasMore(filtered.length > videosPerPage);
+    
+    // Loading holatini o'chiramiz
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 300); // Loading vaqtini 300ms ga tushirdim
   };
 
   const handleSearch = (query: string) => {
@@ -387,91 +415,109 @@ function VideoGrid() {
 
         {/* Video grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {displayedVideos.map((video) => (
-            <div
-              key={video.uid}
-              className="group bg-[#111827]/60 backdrop-blur-sm rounded-lg overflow-hidden hover:ring-1 hover:ring-cyan-400/50 transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/10"
-            >
-              {/* Video thumbnail and preview container */}
-              <Link href={`/watch/${video.uid}`} className="block">
-                <div className="relative aspect-video bg-[#0A0A0F]">
-                  <div className="absolute inset-0 bg-black group-hover:hidden">
-                    {/* Static thumbnail (shown by default) */}
-                    <img
-                      src={`https://videodelivery.net/${video.uid}/thumbnails/thumbnail.jpg?time=${Math.floor(video.duration / 2)}s`}
-                      alt={video.meta.name || 'Video thumbnail'}
-                      className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
-                    />
-                    {/* Play button overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                        <svg
-                          className="w-6 h-6 text-white"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8 5v14l11-7z" />
-                        </svg>
+          {isLoading ? (
+            // Loading holatida skeleton ko'rsatamiz
+            [...Array(12)].map((_, index) => (
+              <VideoSkeleton key={index} />
+            ))
+          ) : displayedVideos.length === 0 ? (
+            // Videolar topilmagan holat
+            <div className="col-span-full text-center py-12">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#1F2937] mb-4">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-300 mb-2">Videolar topilmadi</h3>
+              <p className="text-gray-400">Ushbu kategoriya bo'yicha videolar mavjud emas</p>
+            </div>
+          ) : (
+            // Videolarni ko'rsatish
+            displayedVideos.map((video) => (
+              <div
+                key={video.uid}
+                className="group bg-[#111827]/60 backdrop-blur-sm rounded-lg overflow-hidden hover:ring-1 hover:ring-cyan-400/50 transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/10"
+              >
+                {/* Video thumbnail and preview container */}
+                <Link href={`/watch/${video.uid}`} className="block">
+                  <div className="relative aspect-video bg-[#0A0A0F]">
+                    <div className="absolute inset-0 bg-black group-hover:hidden">
+                      {/* Static thumbnail (shown by default) */}
+                      <img
+                        src={`https://videodelivery.net/${video.uid}/thumbnails/thumbnail.jpg?time=${Math.floor(video.duration / 2)}s`}
+                        alt={video.meta.name || 'Video thumbnail'}
+                        className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+                      />
+                      {/* Play button overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                          <svg
+                            className="w-6 h-6 text-white"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
                       </div>
                     </div>
+                    {/* Video preview (shown on hover) */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <iframe
+                        src={`https://iframe.videodelivery.net/${video.uid}?autoplay=true&loop=true&muted=true&controls=false&preload=metadata&poster=${encodeURIComponent(`https://videodelivery.net/${video.uid}/thumbnails/thumbnail.jpg?time=${Math.floor(video.duration / 2)}s`)}`}
+                        className="w-full h-full pointer-events-none"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                      />
+                    </div>
+                    {/* Video duration overlay */}
+                    <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/80 rounded text-xs text-white">
+                      {Math.floor(video.duration / 60)}:
+                      {String(Math.floor(video.duration % 60)).padStart(2, '0')}
+                    </div>
                   </div>
-                  {/* Video preview (shown on hover) */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <iframe
-                      src={`https://iframe.videodelivery.net/${video.uid}?autoplay=true&loop=true&muted=true&controls=false&preload=metadata&poster=${encodeURIComponent(`https://videodelivery.net/${video.uid}/thumbnails/thumbnail.jpg?time=${Math.floor(video.duration / 2)}s`)}`}
-                      className="w-full h-full pointer-events-none"
-                      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                    />
-                  </div>
-                  {/* Video duration overlay */}
-                  <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/80 rounded text-xs text-white">
-                    {Math.floor(video.duration / 60)}:
-                    {String(Math.floor(video.duration % 60)).padStart(2, '0')}
-                  </div>
-                </div>
-              </Link>
-
-              {/* Video info */}
-              <div className="p-4 space-y-3">
-                <Link href={`/watch/${video.uid}`} className="block">
-                  <h2 className="text-lg font-semibold text-white hover:text-cyan-400 transition-colors">
-                    {video.meta.name || 'Untitled Video'}
-                  </h2>
                 </Link>
-                <p className="text-gray-400">{video.meta.description || 'No description'}</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1 text-gray-400">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                      <span>{video.meta.views || '0'}</span>
+
+                {/* Video info */}
+                <div className="p-4 space-y-3">
+                  <Link href={`/watch/${video.uid}`} className="block">
+                    <h2 className="text-lg font-semibold text-white hover:text-cyan-400 transition-colors">
+                      {video.meta.name || 'Untitled Video'}
+                    </h2>
+                  </Link>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1 text-gray-400">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <span>{video.meta.views || '0'}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-gray-400">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                        </svg>
+                        <span>{video.meta.likes || '0'}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 text-gray-400">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
-                      </svg>
-                      <span>{video.meta.likes || '0'}</span>
+                    <div className="text-gray-400">
+                      {new Date(video.meta.uploadedAt || video.created).toLocaleDateString()}
                     </div>
                   </div>
-                  <div className="text-gray-400">
-                    {new Date(video.meta.uploadedAt || video.created).toLocaleDateString()}
+                  <div className="flex flex-wrap gap-1.5">
+                    {video.meta.category?.split(',').map((category) => (
+                      <span
+                        key={category}
+                        className="px-2 py-1 bg-[#1F2937] rounded-full text-xs text-gray-400"
+                      >
+                        {category.trim()}
+                      </span>
+                    ))}
                   </div>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {video.meta.category?.split(',').map((category) => (
-                    <span
-                      key={category}
-                      className="px-2 py-1 bg-[#1F2937] rounded-full text-xs text-gray-400"
-                    >
-                      {category.trim()}
-                    </span>
-                  ))}
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         {/* Load more button */}
@@ -509,9 +555,17 @@ function HomePageContent() {
     fetchVideos();
   }, []);
 
+  // Bu useEffect-ni olib tashlaymiz chunki fetchVideos o'zi filtrlashni bajaradi
+  // useEffect(() => {
+  //   filterVideos(searchQuery, activeFilter);
+  // }, [videos, searchQuery, activeFilter]);
+
+  // Faqat qidiruv yoki filter o'zgarganda ishlaydigan useEffect
   useEffect(() => {
-    filterVideos(searchQuery, activeFilter);
-  }, [videos, searchQuery, activeFilter]);
+    if (videos.length > 0) {
+      filterVideos(searchQuery, activeFilter);
+    }
+  }, [searchQuery, activeFilter]);
 
   useEffect(() => {
     updateDisplayedVideos();
@@ -542,9 +596,20 @@ function HomePageContent() {
 
   const fetchVideos = async () => {
     try {
+      setIsLoading(true);
       const data = await getVideos();
       setVideos(data);
-      filterVideos(searchQuery, activeFilter, data);
+      
+      // Dastlabki holatda barcha videolarni ko'rsatamiz
+      const sortedData = [...data].sort((a, b) => {
+        const dateA = new Date(a.meta.uploadedAt || a.created);
+        const dateB = new Date(b.meta.uploadedAt || b.created);
+        return dateB.getTime() - dateA.getTime();
+      });
+      
+      setFilteredVideos(sortedData);
+      setDisplayedVideos(sortedData.slice(0, videosPerPage));
+      setHasMore(sortedData.length > videosPerPage);
     } catch (err) {
       setError('Error loading videos');
       console.error(err);
@@ -554,6 +619,8 @@ function HomePageContent() {
   };
 
   const filterVideos = (query: string, filter: string, videoList = videos) => {
+    setIsLoading(true); // Filtrlash boshlanishida loading holatini yoqamiz
+    
     let filtered = [...videoList];
 
     if (query) {
@@ -645,8 +712,15 @@ function HomePageContent() {
     }
 
     setFilteredVideos(filtered);
-    // Sahifani qayta 1 ga o'rnatish
+    // Sahifani qayta 1 ga o'rnatish va dastlabki videolarni ko'rsatish
     setPage(1);
+    setDisplayedVideos(filtered.slice(0, videosPerPage));
+    setHasMore(filtered.length > videosPerPage);
+    
+    // Loading holatini o'chiramiz
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 300); // Loading vaqtini 300ms ga tushirdim
   };
 
   const handleSearch = (query: string) => {
@@ -835,91 +909,109 @@ function HomePageContent() {
 
         {/* Video grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {displayedVideos.map((video) => (
-            <div
-              key={video.uid}
-              className="group bg-[#111827]/60 backdrop-blur-sm rounded-lg overflow-hidden hover:ring-1 hover:ring-cyan-400/50 transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/10"
-            >
-              {/* Video thumbnail and preview container */}
-              <Link href={`/watch/${video.uid}`} className="block">
-                <div className="relative aspect-video bg-[#0A0A0F]">
-                  <div className="absolute inset-0 bg-black group-hover:hidden">
-                    {/* Static thumbnail (shown by default) */}
-                    <img
-                      src={`https://videodelivery.net/${video.uid}/thumbnails/thumbnail.jpg?time=${Math.floor(video.duration / 2)}s`}
-                      alt={video.meta.name || 'Video thumbnail'}
-                      className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
-                    />
-                    {/* Play button overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                        <svg
-                          className="w-6 h-6 text-white"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8 5v14l11-7z" />
-                        </svg>
+          {isLoading ? (
+            // Loading holatida skeleton ko'rsatamiz
+            [...Array(12)].map((_, index) => (
+              <VideoSkeleton key={index} />
+            ))
+          ) : displayedVideos.length === 0 ? (
+            // Videolar topilmagan holat
+            <div className="col-span-full text-center py-12">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#1F2937] mb-4">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-300 mb-2">Videolar topilmadi</h3>
+              <p className="text-gray-400">Ushbu kategoriya bo'yicha videolar mavjud emas</p>
+            </div>
+          ) : (
+            // Videolarni ko'rsatish
+            displayedVideos.map((video) => (
+              <div
+                key={video.uid}
+                className="group bg-[#111827]/60 backdrop-blur-sm rounded-lg overflow-hidden hover:ring-1 hover:ring-cyan-400/50 transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/10"
+              >
+                {/* Video thumbnail and preview container */}
+                <Link href={`/watch/${video.uid}`} className="block">
+                  <div className="relative aspect-video bg-[#0A0A0F]">
+                    <div className="absolute inset-0 bg-black group-hover:hidden">
+                      {/* Static thumbnail (shown by default) */}
+                      <img
+                        src={`https://videodelivery.net/${video.uid}/thumbnails/thumbnail.jpg?time=${Math.floor(video.duration / 2)}s`}
+                        alt={video.meta.name || 'Video thumbnail'}
+                        className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+                      />
+                      {/* Play button overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                          <svg
+                            className="w-6 h-6 text-white"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
                       </div>
                     </div>
+                    {/* Video preview (shown on hover) */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <iframe
+                        src={`https://iframe.videodelivery.net/${video.uid}?autoplay=true&loop=true&muted=true&controls=false&preload=metadata&poster=${encodeURIComponent(`https://videodelivery.net/${video.uid}/thumbnails/thumbnail.jpg?time=${Math.floor(video.duration / 2)}s`)}`}
+                        className="w-full h-full pointer-events-none"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                      />
+                    </div>
+                    {/* Video duration overlay */}
+                    <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/80 rounded text-xs text-white">
+                      {Math.floor(video.duration / 60)}:
+                      {String(Math.floor(video.duration % 60)).padStart(2, '0')}
+                    </div>
                   </div>
-                  {/* Video preview (shown on hover) */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <iframe
-                      src={`https://iframe.videodelivery.net/${video.uid}?autoplay=true&loop=true&muted=true&controls=false&preload=metadata&poster=${encodeURIComponent(`https://videodelivery.net/${video.uid}/thumbnails/thumbnail.jpg?time=${Math.floor(video.duration / 2)}s`)}`}
-                      className="w-full h-full pointer-events-none"
-                      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                    />
-                  </div>
-                  {/* Video duration overlay */}
-                  <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/80 rounded text-xs text-white">
-                    {Math.floor(video.duration / 60)}:
-                    {String(Math.floor(video.duration % 60)).padStart(2, '0')}
-                  </div>
-                </div>
-              </Link>
-
-              {/* Video info */}
-              <div className="p-4 space-y-3">
-                <Link href={`/watch/${video.uid}`} className="block">
-                  <h2 className="text-lg font-semibold text-white hover:text-cyan-400 transition-colors">
-                    {video.meta.name || 'Untitled Video'}
-                  </h2>
                 </Link>
-                <p className="text-gray-400">{video.meta.description || 'No description'}</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1 text-gray-400">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                      <span>{video.meta.views || '0'}</span>
+
+                {/* Video info */}
+                <div className="p-4 space-y-3">
+                  <Link href={`/watch/${video.uid}`} className="block">
+                    <h2 className="text-lg font-semibold text-white hover:text-cyan-400 transition-colors">
+                      {video.meta.name || 'Untitled Video'}
+                    </h2>
+                  </Link>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1 text-gray-400">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <span>{video.meta.views || '0'}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-gray-400">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                        </svg>
+                        <span>{video.meta.likes || '0'}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 text-gray-400">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
-                      </svg>
-                      <span>{video.meta.likes || '0'}</span>
+                    <div className="text-gray-400">
+                      {new Date(video.meta.uploadedAt || video.created).toLocaleDateString()}
                     </div>
                   </div>
-                  <div className="text-gray-400">
-                    {new Date(video.meta.uploadedAt || video.created).toLocaleDateString()}
+                  <div className="flex flex-wrap gap-1.5">
+                    {video.meta.category?.split(',').map((category) => (
+                      <span
+                        key={category}
+                        className="px-2 py-1 bg-[#1F2937] rounded-full text-xs text-gray-400"
+                      >
+                        {category.trim()}
+                      </span>
+                    ))}
                   </div>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {video.meta.category?.split(',').map((category) => (
-                    <span
-                      key={category}
-                      className="px-2 py-1 bg-[#1F2937] rounded-full text-xs text-gray-400"
-                    >
-                      {category.trim()}
-                    </span>
-                  ))}
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         {/* Load more button */}

@@ -80,37 +80,93 @@ interface VideoMeta {
 
 export async function updateVideoMeta(videoId: string, meta: VideoMeta) {
   try {
-    const response = await fetch(`/api/videos/${videoId}/meta`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(meta),
-    });
+    // Avval joriy video ma'lumotlarini olish
+    const currentResponse = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream/${videoId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_CLOUDFLARE_API_TOKEN}`,
+        },
+      }
+    );
 
-    if (!response.ok) {
-      throw new Error('Error updating metadata ');
+    if (!currentResponse.ok) {
+      throw new Error('Error fetching current video data');
     }
 
-    return await response.json();
+    const currentData = await currentResponse.json();
+    const currentMeta = currentData.result.meta || {};
+
+    // Yangi meta ma'lumotlarini joriy ma'lumotlar bilan birlashtirish
+    const updatedMeta = {
+      ...currentMeta,
+      ...meta
+    };
+
+    // Yangilangan ma'lumotlarni yuborish
+    const response = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream/${videoId}`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_CLOUDFLARE_API_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          meta: updatedMeta
+        })
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API Error Response:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText
+      });
+      throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.result;
   } catch (error) {
-    throw new Error('Error updating metadata ');
+    console.error('Error updating metadata:', error);
+    throw error;
   }
 }
 
 export async function incrementViews(videoId: string, currentViews: string) {
-  const newViews = (parseInt(currentViews || '0') + 1).toString();
-  return updateVideoMeta(videoId, { views: newViews });
+  try {
+    const newViews = (parseInt(currentViews || '0') + 1).toString();
+    const result = await updateVideoMeta(videoId, { views: newViews });
+    return result.meta.views;
+  } catch (error) {
+    console.error('Error incrementing views:', error);
+    return currentViews;
+  }
 }
 
 export async function handleLike(videoId: string, currentLikes: string) {
-  const newLikes = (parseInt(currentLikes || '0') + 1).toString();
-  return updateVideoMeta(videoId, { likes: newLikes });
+  try {
+    const newLikes = (parseInt(currentLikes || '0') + 1).toString();
+    const result = await updateVideoMeta(videoId, { likes: newLikes });
+    return result.meta.likes;
+  } catch (error) {
+    console.error('Error handling like:', error);
+    return currentLikes;
+  }
 }
 
 export async function handleDislike(videoId: string, currentDislikes: string) {
-  const newDislikes = (parseInt(currentDislikes || '0') + 1).toString();
-  return updateVideoMeta(videoId, { dislikes: newDislikes });
+  try {
+    const newDislikes = (parseInt(currentDislikes || '0') + 1).toString();
+    const result = await updateVideoMeta(videoId, { dislikes: newDislikes });
+    return result.meta.dislikes;
+  } catch (error) {
+    console.error('Error handling dislike:', error);
+    return currentDislikes;
+  }
 }
 
 export async function deleteVideo(videoId: string) {

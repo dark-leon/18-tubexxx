@@ -42,9 +42,48 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
     <nav className="fixed top-0 left-0 right-0 bg-[#030712]/80 backdrop-blur-md border-b border-cyan-950 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="text-xl font-bold text-white flex items-center space-x-2">
-            <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">18-TubeXXX</span>
+          <Link href="/" className="text-xl font-bold text-white flex items-center space-x-2 group">
+            <div className="flex items-center">
+              <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent text-2xl font-extrabold tracking-tight group-hover:scale-105 transition-transform">
+                18-Tube
+              </span>
+              <span className="bg-gradient-to-r from-pink-500 via-red-500 to-pink-500 bg-clip-text text-transparent text-2xl font-extrabold tracking-tight group-hover:scale-105 transition-transform">
+                XXX
+              </span>
+              <div className="ml-1 h-2 w-2 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 group-hover:animate-ping"></div>
+            </div>
           </Link>
+
+          {/* Search - Always visible on all screens */}
+          <form onSubmit={handleSearchSubmit} className="flex-1 max-w-lg mx-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search videos..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="w-full bg-[#111827]/60 backdrop-blur-sm text-white pl-4 pr-10 py-2 rounded-full focus:outline-none focus:ring-1 focus:ring-cyan-400/50 border border-cyan-950 hover:border-cyan-800/50 transition-colors"
+              />
+              <button
+                type="submit"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </form>
 
           {/* Desktop menu */}
           <div className="hidden md:block">
@@ -98,55 +137,8 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
             </div>
           </div>
 
-          {/* Search */}
-          <form onSubmit={handleSearchSubmit} className="flex-1 max-w-lg mx-4 hidden md:block">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search videos..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="w-full bg-[#111827]/60 backdrop-blur-sm text-white pl-4 pr-10 py-2 rounded-full focus:outline-none focus:ring-1 focus:ring-cyan-400/50 border border-cyan-950 hover:border-cyan-800/50 transition-colors"
-              />
-              <button
-                type="submit"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </button>
-            </div>
-          </form>
-
           {/* User menu */}
           <div className="hidden md:flex items-center space-x-4">
-            <div className="relative group">
-              <button className="flex items-center space-x-2 text-gray-400 hover:text-white">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                <span>Upload</span>
-              </button>
-              <div className="absolute right-0 mt-2 w-48 bg-[#111827]/95 backdrop-blur-sm rounded-lg shadow-lg border border-cyan-950 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                <Link
-                  href="/upload"
-                  className="block px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-[#1F2937]/80"
-                >
-                  Upload Video
-                </Link>
-              </div>
-            </div>
             <Link
               href="/admin/login"
               className="px-4 py-2 bg-gradient-to-r from-emerald-400 to-cyan-400 hover:from-cyan-400 hover:to-emerald-400 rounded-lg text-white transition-all shadow-lg shadow-emerald-500/20"
@@ -190,37 +182,6 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
         {/* Mobile menu */}
         {isMenuOpen && (
           <div className="md:hidden">
-            {/* Mobile Search */}
-            <form onSubmit={handleSearchSubmit} className="px-2 pt-2 pb-3">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search videos..."
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  className="w-full bg-[#111827]/60 backdrop-blur-sm text-white pl-4 pr-10 py-2 rounded-full focus:outline-none focus:ring-1 focus:ring-cyan-400/50 border border-cyan-950 hover:border-cyan-800/50 transition-colors"
-                />
-                <button
-                  type="submit"
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </form>
-
             {/* Mobile Navigation Links */}
             <div className="px-2 pb-3 space-y-1">
               <button
@@ -296,8 +257,14 @@ export default function Navbar(props: NavbarProps) {
       <nav className="fixed top-0 left-0 right-0 bg-[#030712]/80 backdrop-blur-md border-b border-cyan-950 z-50">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            <div className="text-xl font-bold text-white flex items-center space-x-2">
-              <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">18-TubeXXX</span>
+            <div className="flex items-center">
+              <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent text-2xl font-extrabold tracking-tight">
+                18-Tube
+              </span>
+              <span className="bg-gradient-to-r from-pink-500 via-red-500 to-pink-500 bg-clip-text text-transparent text-2xl font-extrabold tracking-tight">
+                XXX
+              </span>
+              <div className="ml-1 h-2 w-2 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400"></div>
             </div>
             <div className="animate-pulse h-10 w-64 bg-[#111827]/60 rounded-full"></div>
           </div>

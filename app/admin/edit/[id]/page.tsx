@@ -7,16 +7,60 @@ import type { VideoData } from '../../../utils/cloudflare';
 import Navbar from '../../../components/Navbar';
 
 const defaultCategories = [
-  'Asian',
-  'Doggystyle',
-  'DeepThroat',
-  'Real',
-  'Big Ass',
+  // Main Categories
   'Amateur',
-  'Hardcore',
-  'POV',
+  'Asian',
+  'Blonde',
+  'Brunette',
+  'Ebony',
+  'Latina',
+  'MILF',
+  'Redhead',
+  'Russian',
+  'Teen',
+  // Features
+  'Big Ass',
+  'Big Tits',
+  'Real',
+  'Verified',
+  // Actions
+  'Anal',
   'Blowjob',
-  'Threesome'
+  'Creampie',
+  'Cumshot',
+  'DeepThroat',
+  'Doggystyle',
+  'Facial',
+  'Hardcore',
+  'Interracial',
+  'Lesbian',
+  'Masturbation',
+  'Orgasm',
+  'POV',
+  'Public',
+  'Solo',
+  'Squirt',
+  'Threesome',
+  'Toys',
+  // Pornstars
+  'Abella Danger',
+  'Adriana Chechik',
+  'Angela White',
+  'Asa Akira',
+  'Brandi Love',
+  'Dani Daniels',
+  'Eva Elfie',
+  'Gabbie Carter',
+  'Jia Lissa',
+  'Johnny Sins',
+  'Lana Rhoades',
+  'Lisa Ann',
+  'Mia Khalifa',
+  'Mia Malkova',
+  'Nicole Aniston',
+  'Riley Reid',
+  'Sasha Grey',
+  'Valentina Nappi'
 ];
 
 interface PageProps {

@@ -325,6 +325,7 @@ function UploadPageContent() {
   const progressBarRef = useRef<HTMLProgressElement>(null);
   const [currentTag, setCurrentTag] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -332,21 +333,17 @@ function UploadPageContent() {
     }
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file) return;
+    if (!file) {
+      setError('Iltimos, video faylini tanlang');
+      return;
+    }
 
     setUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('meta', JSON.stringify({
-        name: title,
-        description,
-        categories: selectedCategories,
-        tags
-      }));
+    setError(null);
 
+    try {
       await uploadVideo(
         file,
         {
@@ -354,27 +351,17 @@ function UploadPageContent() {
           description,
           category: selectedCategories.map(id => defaultCategories.find(cat => cat.id === id)?.name).filter(Boolean).join(', '),
           categories: selectedCategories.join(','),
-          tags
+          tags: tags.join(',')
         },
         (progress) => {
           setProgress(progress);
-          if (progressBarRef.current) {
-            progressBarRef.current.value = progress;
-          }
         }
       );
 
-      // Yuklash tugagandan so'ng formani tozalash
-      setFile(null);
-      setTitle('');
-      setDescription('');
-      setSelectedCategories([]);
-      setTags([]);
-      setProgress(0);
-      alert('Video muvaffaqiyatli yuklandi!');
-    } catch (error) {
-      console.error('Yuklash xatosi:', error);
-      alert('Video yuklashda xatolik yuz berdi!');
+      router.push('/admin');
+    } catch (err) {
+      console.error('Video yuklashda xatolik:', err);
+      setError('Video yuklashda xatolik yuz berdi');
     } finally {
       setUploading(false);
     }

@@ -377,4 +377,96 @@ export default function WatchPage({ params }: PageProps) {
       </main>
     </div>
   );
+}
+
+export async function generateMetadata({ params }: PageProps) {
+  try {
+    const videos = await getVideos();
+    const video = videos.find((v) => v.uid === params.id);
+
+    if (!video) {
+      return {
+        title: 'Video Not Found - TubeXXX Adult Videos',
+        description: 'The requested video could not be found.',
+      };
+    }
+
+    const title = video.meta.name || '18+ Adult Video';
+    const description = video.meta.description || 'Watch free HD adult video online';
+    const categories = video.meta.category?.split(',').map(c => c.trim()).join(', ') || '';
+    const uploadDate = video.meta.uploadedAt || video.created;
+    const thumbnailUrl = `https://videodelivery.net/${video.uid}/thumbnails/thumbnail.jpg?time=${Math.floor(video.duration / 2)}s`;
+
+    return {
+      title: `${title} - TubeXXX Adult Videos`,
+      description: `${description}. Categories: ${categories}. Watch free HD adult videos online.`,
+      keywords: `adult video, ${categories}, porn video, free porn, HD porn, xxx video`,
+      openGraph: {
+        title: title,
+        description: description,
+        type: 'video.other',
+        videos: [{
+          url: `https://videodelivery.net/${video.uid}/manifest/video.m3u8`,
+          width: video.input?.width || 1920,
+          height: video.input?.height || 1080,
+          type: 'application/x-mpegURL',
+        }],
+        images: [{
+          url: thumbnailUrl,
+          width: 1280,
+          height: 720,
+          alt: title,
+        }],
+      },
+      twitter: {
+        card: 'player',
+        title: title,
+        description: description,
+        images: [thumbnailUrl],
+      },
+      alternates: {
+        canonical: `https://yourdomain.com/watch/${video.uid}`
+      },
+      other: {
+        'video:duration': Math.floor(video.duration).toString(),
+        'video:release_date': new Date(uploadDate).toISOString(),
+        'video:tag': categories.split(', '),
+      },
+      script: [{
+        type: 'application/ld+json',
+        text: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'VideoObject',
+          name: title,
+          description: description,
+          thumbnailUrl: thumbnailUrl,
+          uploadDate: new Date(uploadDate).toISOString(),
+          duration: `PT${Math.floor(video.duration)}S`,
+          contentUrl: `https://videodelivery.net/${video.uid}/manifest/video.m3u8`,
+          embedUrl: `https://iframe.videodelivery.net/${video.uid}`,
+          interactionStatistic: [
+            {
+              '@type': 'InteractionCounter',
+              interactionType: { '@type': 'WatchAction' },
+              userInteractionCount: parseInt(video.meta.views || '0')
+            },
+            {
+              '@type': 'InteractionCounter',
+              interactionType: { '@type': 'LikeAction' },
+              userInteractionCount: parseInt(video.meta.likes || '0')
+            }
+          ],
+          genre: categories.split(', '),
+          width: video.input?.width || 1920,
+          height: video.input?.height || 1080,
+        })
+      }]
+    };
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return {
+      title: 'TubeXXX Adult Videos',
+      description: 'Watch free HD adult videos online',
+    };
+  }
 } 

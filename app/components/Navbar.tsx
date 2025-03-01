@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 interface NavbarProps {
@@ -9,7 +9,7 @@ interface NavbarProps {
   onFilterChange?: (filter: string) => void;
 }
 
-export default function Navbar({ onSearch, onFilterChange }: NavbarProps) {
+function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -287,5 +287,24 @@ export default function Navbar({ onSearch, onFilterChange }: NavbarProps) {
         )}
       </div>
     </nav>
+  );
+}
+
+export default function Navbar(props: NavbarProps) {
+  return (
+    <Suspense fallback={
+      <nav className="fixed top-0 left-0 right-0 bg-[#030712]/80 backdrop-blur-md border-b border-cyan-950 z-50">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <div className="text-xl font-bold text-white flex items-center space-x-2">
+              <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">18-TubeXXX</span>
+            </div>
+            <div className="animate-pulse h-10 w-64 bg-[#111827]/60 rounded-full"></div>
+          </div>
+        </div>
+      </nav>
+    }>
+      <NavbarContent {...props} />
+    </Suspense>
   );
 } 

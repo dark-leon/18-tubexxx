@@ -40,16 +40,21 @@ function AdminPageContent() {
   };
 
   const handleDeleteVideo = async (videoId: string) => {
-    if (!confirm('Are you sure you want to delete this video?')) {
+    if (!confirm('Videoni o\'chirishni xohlaysizmi?')) {
       return;
     }
 
     setDeletingVideo(videoId);
     try {
-      await deleteVideo(videoId);
-      setVideos(videos.filter(v => v.uid !== videoId));
+      const result = await deleteVideo(videoId);
+      if (result) {
+        setVideos(videos.filter(v => v.uid !== videoId));
+      } else {
+        throw new Error('Video o\'chirishda xatolik yuz berdi');
+      }
     } catch (err) {
-      console.error('Error deleting video:', err);
+      console.error('Video o\'chirishda xatolik:', err);
+      alert('Video o\'chirishda xatolik yuz berdi. Iltimos qaytadan urinib ko\'ring.');
     } finally {
       setDeletingVideo(null);
     }

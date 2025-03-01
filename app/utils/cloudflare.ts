@@ -107,7 +107,7 @@ interface VideoMeta {
   description?: string;
   category?: string;
   categories?: string;
-  tags?: string[];
+  tags?: string;
   views?: string;
   likes?: string;
   dislikes?: string;

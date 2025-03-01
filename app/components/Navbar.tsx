@@ -131,28 +131,6 @@ export default function Navbar({ onSearch, onFilterChange }: NavbarProps) {
 
           {/* User menu */}
           <div className="hidden md:flex items-center space-x-4">
-            <div className="relative group">
-              <button className="flex items-center space-x-2 text-gray-400 hover:text-white">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                <span>Upload</span>
-              </button>
-              <div className="absolute right-0 mt-2 w-48 bg-[#111827]/95 backdrop-blur-sm rounded-lg shadow-lg border border-cyan-950 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                <Link
-                  href="/admin/upload"
-                  className="block px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-[#1F2937]/80"
-                >
-                  Upload Video
-                </Link>
-                <Link
-                  href="/admin/videos"
-                  className="block px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-[#1F2937]/80"
-                >
-                  Manage Videos
-                </Link>
-              </div>
-            </div>
             <Link
               href="/admin/login"
               className="px-4 py-2 bg-gradient-to-r from-emerald-400 to-cyan-400 hover:from-cyan-400 hover:to-emerald-400 rounded-lg text-white transition-all shadow-lg shadow-emerald-500/20"
@@ -276,18 +254,6 @@ export default function Navbar({ onSearch, onFilterChange }: NavbarProps) {
                 <span>Most Liked</span>
               </button>
               <div className="border-t border-cyan-950 my-2"></div>
-              <Link
-                href="/admin/upload"
-                className="block text-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium"
-              >
-                Upload Video
-              </Link>
-              <Link
-                href="/admin/videos"
-                className="block text-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium"
-              >
-                Manage Videos
-              </Link>
               <Link
                 href="/admin/login"
                 className="block text-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium"

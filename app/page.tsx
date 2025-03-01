@@ -248,6 +248,7 @@ function VideoGrid() {
       <main className="container mx-auto px-4 pt-24 pb-8 relative">
         {/* Kategoriya tugmalari */}
         <div className="flex flex-wrap justify-center gap-4 mb-8">
+          {/* All Videos tugmasi */}
           <button
             onClick={() => setActiveFilter('all')}
             className={`px-4 py-2 rounded-lg transition-all ${
@@ -263,19 +264,87 @@ function VideoGrid() {
               <span>All Videos (18+)</span>
             </div>
           </button>
-          {['Asian', 'Doggystyle', 'DeepThroat', 'Real', 'Big Ass', 'Amateur', 'Hardcore', 'POV', 'Blowjob', 'Threesome'].map((category) => (
+
+          {/* Main Categories dropdown */}
+          <div className="relative group">
             <button
-              key={category}
-              onClick={() => setActiveFilter(category.toLowerCase())}
-              className={`px-4 py-2 rounded-lg transition-all ${
-                activeFilter === category.toLowerCase()
-                  ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
-                  : 'bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10'
-              }`}
+              className={`px-4 py-2 rounded-lg transition-all bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10 flex items-center gap-2`}
             >
-              {category}
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+              <span>Main</span>
             </button>
-          ))}
+            <div className="absolute z-50 left-0 mt-2 w-48 rounded-lg bg-[#1F2937] shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2">
+              {['Amateur', 'Asian', 'Blonde', 'Brunette', 'Ebony', 'Latina', 'MILF', 'Redhead', 'Russian', 'Teen'].map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setActiveFilter(category.toLowerCase())}
+                  className={`w-full px-4 py-2 text-left transition-all ${
+                    activeFilter === category.toLowerCase()
+                      ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white'
+                      : 'text-gray-400 hover:text-white hover:bg-[#111827]'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Features dropdown */}
+          <div className="relative group">
+            <button
+              className={`px-4 py-2 rounded-lg transition-all bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10 flex items-center gap-2`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+              <span>Features</span>
+            </button>
+            <div className="absolute z-50 left-0 mt-2 w-48 rounded-lg bg-[#1F2937] shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2">
+              {['Big Ass', 'Big Tits', 'Real', 'Verified'].map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setActiveFilter(category.toLowerCase())}
+                  className={`w-full px-4 py-2 text-left transition-all ${
+                    activeFilter === category.toLowerCase()
+                      ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white'
+                      : 'text-gray-400 hover:text-white hover:bg-[#111827]'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Actions dropdown */}
+          <div className="relative group">
+            <button
+              className={`px-4 py-2 rounded-lg transition-all bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10 flex items-center gap-2`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+              <span>Actions</span>
+            </button>
+            <div className="absolute z-50 left-0 mt-2 w-48 rounded-lg bg-[#1F2937] shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2">
+              {['Anal', 'Blowjob', 'Creampie', 'Cumshot', 'DeepThroat', 'Doggystyle', 'Facial', 'Hardcore', 'Interracial', 'Lesbian', 'Masturbation', 'Orgasm', 'POV', 'Public', 'Solo', 'Squirt', 'Threesome', 'Toys'].map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setActiveFilter(category.toLowerCase())}
+                  className={`w-full px-4 py-2 text-left transition-all ${
+                    activeFilter === category.toLowerCase()
+                      ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white'
+                      : 'text-gray-400 hover:text-white hover:bg-[#111827]'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Search results info */}
@@ -338,112 +407,56 @@ function VideoGrid() {
               {/* Video info */}
               <div className="p-4 space-y-3">
                 <Link href={`/watch/${video.uid}`} className="block">
-                  <h2 className="text-gray-100 font-medium line-clamp-2 group-hover:text-cyan-400 transition-colors">
-                    {video.meta.name || 'Untitled video'}
+                  <h2 className="text-lg font-semibold text-white hover:text-cyan-400 transition-colors">
+                    {video.meta.name || 'Untitled Video'}
                   </h2>
                 </Link>
-
+                <p className="text-gray-400">{video.meta.description || 'No description'}</p>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="flex items-center text-sm text-gray-400">
-                      <svg
-                        className="w-4 h-4 mr-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        />
+                    <div className="flex items-center gap-1 text-gray-400">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
-                      {video.meta.views || '0'}
-                    </span>
-                    <span className="flex items-center text-sm text-gray-400">
-                      <svg
-                        className="w-4 h-4 mr-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"
-                        />
+                      <span>{video.meta.views || '0'}</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-gray-400">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                       </svg>
-                      {video.meta.likes || '0'}
-                    </span>
+                      <span>{video.meta.likes || '0'}</span>
+                    </div>
                   </div>
-                  <span className="text-xs text-gray-500">
-                    {new Date(video.meta.uploadedAt || video.created).toLocaleDateString('uz-UZ')}
-                  </span>
+                  <div className="text-gray-400">
+                    {new Date(video.meta.uploadedAt || video.created).toLocaleDateString()}
+                  </div>
                 </div>
-
-                {video.meta.category && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {video.meta.category.split(', ').map((category, index) => (
-                      <span
-                        key={index}
-                        className="inline-block px-2 py-0.5 bg-[#1E293B]/60 backdrop-blur-sm text-gray-400 rounded-full text-xs border border-cyan-950"
-                      >
-                        {category}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                <div className="flex flex-wrap gap-1.5">
+                  {video.meta.category?.split(',').map((category) => (
+                    <span
+                      key={category}
+                      className="px-2 py-1 bg-[#1F2937] rounded-full text-xs text-gray-400"
+                    >
+                      {category.trim()}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           ))}
-          
-          {/* Loading more skeletons */}
-          {isLoadingMore && (
-            <>
-              {[...Array(4)].map((_, index) => (
-                <VideoSkeleton key={`loading-${index}`} />
-              ))}
-            </>
-          )}
         </div>
 
         {/* Load more button */}
         {hasMore && (
-          <div className="flex justify-center mt-8">
+          <div className="text-center mt-8">
             <button
               onClick={loadMore}
               disabled={isLoadingMore}
-              className="px-6 py-3 bg-gradient-to-r from-emerald-400 to-cyan-400 hover:from-cyan-400 hover:to-emerald-400 rounded-lg text-white transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20 hover:shadow-cyan-500/30 transition-all"
             >
-              {isLoadingMore ? (
-                <>
-                  <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
-                  <span>Yuklanmoqda...</span>
-                </>
-              ) : (
-                <>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                  <span>Yana ko'rsatish</span>
-                </>
-              )}
+              {isLoadingMore ? 'Loading...' : 'Load More'}
             </button>
-          </div>
-        )}
-
-        {/* No results message */}
-        {displayedVideos.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">Videolar topilmadi</p>
           </div>
         )}
       </main>
@@ -451,19 +464,4 @@ function VideoGrid() {
   );
 }
 
-export default function Home() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-[#0A0A0F] bg-[linear-gradient(to_bottom,rgba(0,0,0,0)_0%,rgba(0,0,0,0.8)_100%)] text-white">
-        <div className="container mx-auto px-4 pt-24 pb-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
-          </div>
-        </div>
-      </div>
-    }>
-      <VideoGrid />
-    </Suspense>
-  );
-}
-
+export default VideoGrid;

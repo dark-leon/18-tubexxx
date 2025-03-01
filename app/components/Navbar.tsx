@@ -14,21 +14,26 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (onSearch && searchQuery.trim()) {
-      onSearch(searchQuery.trim());
+    if (searchQuery.trim()) {
+      // URL parametrlarini yangilash
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('search', searchQuery.trim());
+      router.push(`${pathname}?${params.toString()}`);
+      
+      // Parent komponentga qidiruv so'rovini yuborish
+      if (onSearch) {
+        onSearch(searchQuery.trim());
+      }
     }
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
-    if (onSearch) {
-      onSearch(value);
-    }
   };
 
   const handleFilterClick = (filter: string) => {

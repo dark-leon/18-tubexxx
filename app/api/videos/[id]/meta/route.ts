@@ -21,7 +21,7 @@ export async function PATCH(
 
     if (!response.ok) {
       return NextResponse.json(
-        { error: 'Video ma\'lumotlarini yangilashda xatolik' },
+        { error: 'Error updating video metadata' },
         { status: response.status }
       );
     }
@@ -31,7 +31,7 @@ export async function PATCH(
   } catch (error) {
     console.error('Metadata update error:', error);
     return NextResponse.json(
-      { error: 'Video ma\'lumotlarini yangilashda xatolik' },
+      { error: 'Error updating video metadata' },
       { status: 500 }
     );
   }

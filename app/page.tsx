@@ -7,7 +7,6 @@ import type { VideoData } from './utils/cloudflare';
 import Navbar from './components/Navbar';
 import Link from 'next/link';
 
-// VideoSkeleton komponenti
 function VideoSkeleton() {
   return (
     <div className="bg-[#111827]/60 backdrop-blur-sm rounded-lg overflow-hidden">
@@ -22,15 +21,7 @@ function VideoSkeleton() {
         <div className="h-5 bg-[#1E293B] rounded animate-pulse w-3/4"></div>
         <div className="h-5 bg-[#1E293B] rounded animate-pulse w-1/2"></div>
 
-        {/* Stats skeleton */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-4 w-16 bg-[#1E293B] rounded animate-pulse"></div>
-            <div className="h-4 w-16 bg-[#1E293B] rounded animate-pulse"></div>
-          </div>
-          <div className="h-4 w-20 bg-[#1E293B] rounded animate-pulse"></div>
-        </div>
-
+    
         {/* Categories skeleton */}
         <div className="flex flex-wrap gap-1.5">
           <div className="h-5 w-16 bg-[#1E293B] rounded-full animate-pulse"></div>
@@ -52,7 +43,7 @@ function VideoGrid() {
   const [activeFilter, setActiveFilter] = useState(searchParams.get('filter') || 'all');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [page, setPage] = useState(1);
-  const videosPerPage = 60;
+  const videosPerPage = 30;
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
@@ -60,12 +51,7 @@ function VideoGrid() {
     fetchVideos();
   }, []);
 
-  // Bu useEffect-ni olib tashlaymiz chunki fetchVideos o'zi filtrlashni bajaradi
-  // useEffect(() => {
-  //   filterVideos(searchQuery, activeFilter);
-  // }, [videos, searchQuery, activeFilter]);
 
-  // Faqat qidiruv yoki filter o'zgarganda ishlaydigan useEffect
   useEffect(() => {
     if (videos.length > 0) {
       filterVideos(searchQuery, activeFilter);
@@ -105,7 +91,6 @@ function VideoGrid() {
       const data = await getVideos();
       setVideos(data);
       
-      // Dastlabki holatda barcha videolarni ko'rsatamiz
       const sortedData = [...data].sort((a, b) => {
         const dateA = new Date(a.meta.uploadedAt || a.created);
         const dateB = new Date(b.meta.uploadedAt || b.created);
@@ -124,7 +109,7 @@ function VideoGrid() {
   };
 
   const filterVideos = (query: string, filter: string, videoList = videos) => {
-    setIsLoading(true); // Filtrlash boshlanishida loading holatini yoqamiz
+    setIsLoading(true);
     
     let filtered = [...videoList];
 
@@ -132,11 +117,11 @@ function VideoGrid() {
       const searchLower = query.toLowerCase();
       filtered = filtered.filter(video =>
         video.meta.name?.toLowerCase().includes(searchLower) ||
-        video.meta.description?.toLowerCase().includes(searchLower)
+        video.meta.description?.toLowerCase().includes(searchLower) ||
+        video.meta.category?.toLowerCase().includes(searchLower)
       );
     }
 
-    // Kategoriya yoki filter bo'yicha saralash
     switch (filter) {
       case 'new':
         filtered.sort((a, b) => {
@@ -168,7 +153,6 @@ function VideoGrid() {
         break;
 
       case 'trending':
-        // So'nggi 7 kunlik videolarni ko'rishlar va layklar bo'yicha saralash
         const now = new Date();
         const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         
@@ -193,7 +177,6 @@ function VideoGrid() {
         break;
 
       case 'all':
-        // Standart holat - eng yangi videolar tepada
         filtered.sort((a, b) => {
           const dateA = new Date(a.meta.uploadedAt || a.created);
           const dateB = new Date(b.meta.uploadedAt || b.created);
@@ -202,13 +185,11 @@ function VideoGrid() {
         break;
 
       default:
-        // Kategoriya bo'yicha filterlash
         if (filter) {
           filtered = filtered.filter(video => 
             video.meta.category?.toLowerCase().includes(filter.toLowerCase())
           );
         }
-        // Kategoriya ichida eng yangi videolar tepada
         filtered.sort((a, b) => {
           const dateA = new Date(a.meta.uploadedAt || a.created);
           const dateB = new Date(b.meta.uploadedAt || b.created);
@@ -217,15 +198,13 @@ function VideoGrid() {
     }
 
     setFilteredVideos(filtered);
-    // Sahifani qayta 1 ga o'rnatish va dastlabki videolarni ko'rsatish
     setPage(1);
     setDisplayedVideos(filtered.slice(0, videosPerPage));
     setHasMore(filtered.length > videosPerPage);
     
-    // Loading holatini o'chiramiz
     setTimeout(() => {
       setIsLoading(false);
-    }, 300); // Loading vaqtini 300ms ga tushirdim
+    }, 300);
   };
 
   const handleSearch = (query: string) => {
@@ -416,23 +395,20 @@ function VideoGrid() {
         {/* Video grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {isLoading ? (
-            // Loading holatida skeleton ko'rsatamiz
             [...Array(12)].map((_, index) => (
               <VideoSkeleton key={index} />
             ))
           ) : displayedVideos.length === 0 ? (
-            // Videolar topilmagan holat
             <div className="col-span-full text-center py-12">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#1F2937] mb-4">
                 <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-300 mb-2">Videolar topilmadi</h3>
-              <p className="text-gray-400">Ushbu kategoriya bo'yicha videolar mavjud emas</p>
+              <h3 className="text-xl font-semibold text-gray-300 mb-2">Videos not found</h3>
+              <p className="text-gray-400">There are no videos in this category</p>
             </div>
           ) : (
-            // Videolarni ko'rsatish
             displayedVideos.map((video) => (
               <div
                 key={video.uid}
@@ -469,49 +445,55 @@ function VideoGrid() {
                         allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                       />
                     </div>
-                    {/* Video duration overlay */}
-                    <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/80 rounded text-xs text-white">
-                      {Math.floor(video.duration / 60)}:
-                      {String(Math.floor(video.duration % 60)).padStart(2, '0')}
+                    {/* Video duration and quality overlay */}
+                    <div className="absolute bottom-2 right-2 flex items-center gap-2">
+                      <div className="px-2 py-1 bg-black/80 rounded text-xs text-white">
+                        {Math.floor(video.duration / 60)}:
+                        {String(Math.floor(video.duration % 60)).padStart(2, '0')}
+                      </div>
+                      <div className="px-2 py-1 bg-emerald-500/80 rounded text-xs font-medium text-white">
+                        HD
+                      </div>
                     </div>
                   </div>
                 </Link>
 
                 {/* Video info */}
-                <div className="p-4 space-y-3">
+                <div className="p-3 space-y-2">
                   <Link href={`/watch/${video.uid}`} className="block">
-                    <h2 className="text-lg font-semibold text-white hover:text-cyan-400 transition-colors">
+                    <h2 className="text-base font-medium text-white hover:text-cyan-400 transition-colors line-clamp-1">
                       {video.meta.name || 'Untitled Video'}
                     </h2>
                   </Link>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-1 text-gray-400">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
                         <span>{video.meta.views || '0'}</span>
                       </div>
                       <div className="flex items-center gap-1 text-gray-400">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                         </svg>
                         <span>{video.meta.likes || '0'}</span>
                       </div>
                     </div>
-                    <div className="text-gray-400">
+                    <div className="text-gray-400 text-xs">
                       {new Date(video.meta.uploadedAt || video.created).toLocaleDateString()}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {video.meta.category?.split(',').map((category) => (
-                      <span
+                      <button
                         key={category}
-                        className="px-2 py-1 bg-[#1F2937] rounded-full text-xs text-gray-400"
+                        onClick={() => setActiveFilter(category.trim().toLowerCase())}
+                        className="px-1.5 py-0.5 bg-[#1F2937] rounded-full text-[10px] text-gray-400 whitespace-nowrap hover:bg-gradient-to-r hover:from-emerald-400 hover:to-cyan-400 hover:text-white transition-all hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/20"
                       >
                         {category.trim()}
-                      </span>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -547,7 +529,7 @@ function HomePageContent() {
   const [activeFilter, setActiveFilter] = useState(searchParams.get('filter') || 'all');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [page, setPage] = useState(1);
-  const videosPerPage = 60;
+  const videosPerPage = 30;
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
@@ -555,12 +537,6 @@ function HomePageContent() {
     fetchVideos();
   }, []);
 
-  // Bu useEffect-ni olib tashlaymiz chunki fetchVideos o'zi filtrlashni bajaradi
-  // useEffect(() => {
-  //   filterVideos(searchQuery, activeFilter);
-  // }, [videos, searchQuery, activeFilter]);
-
-  // Faqat qidiruv yoki filter o'zgarganda ishlaydigan useEffect
   useEffect(() => {
     if (videos.length > 0) {
       filterVideos(searchQuery, activeFilter);
@@ -568,13 +544,15 @@ function HomePageContent() {
   }, [searchQuery, activeFilter]);
 
   useEffect(() => {
-    updateDisplayedVideos();
-  }, [filteredVideos, page]);
-
-  useEffect(() => {
+    // URL parametrlarini kuzatib borish
     const filter = searchParams.get('filter');
+    const search = searchParams.get('search');
+    
     if (filter) {
       setActiveFilter(filter);
+    }
+    if (search !== null) {
+      setSearchQuery(search);
     }
   }, [searchParams]);
 
@@ -600,7 +578,6 @@ function HomePageContent() {
       const data = await getVideos();
       setVideos(data);
       
-      // Dastlabki holatda barcha videolarni ko'rsatamiz
       const sortedData = [...data].sort((a, b) => {
         const dateA = new Date(a.meta.uploadedAt || a.created);
         const dateB = new Date(b.meta.uploadedAt || b.created);
@@ -619,7 +596,7 @@ function HomePageContent() {
   };
 
   const filterVideos = (query: string, filter: string, videoList = videos) => {
-    setIsLoading(true); // Filtrlash boshlanishida loading holatini yoqamiz
+    setIsLoading(true);
     
     let filtered = [...videoList];
 
@@ -627,11 +604,11 @@ function HomePageContent() {
       const searchLower = query.toLowerCase();
       filtered = filtered.filter(video =>
         video.meta.name?.toLowerCase().includes(searchLower) ||
-        video.meta.description?.toLowerCase().includes(searchLower)
+        video.meta.description?.toLowerCase().includes(searchLower) ||
+        video.meta.category?.toLowerCase().includes(searchLower)
       );
     }
 
-    // Kategoriya yoki filter bo'yicha saralash
     switch (filter) {
       case 'new':
         filtered.sort((a, b) => {
@@ -663,7 +640,6 @@ function HomePageContent() {
         break;
 
       case 'trending':
-        // So'nggi 7 kunlik videolarni ko'rishlar va layklar bo'yicha saralash
         const now = new Date();
         const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         
@@ -688,7 +664,6 @@ function HomePageContent() {
         break;
 
       case 'all':
-        // Standart holat - eng yangi videolar tepada
         filtered.sort((a, b) => {
           const dateA = new Date(a.meta.uploadedAt || a.created);
           const dateB = new Date(b.meta.uploadedAt || b.created);
@@ -697,13 +672,11 @@ function HomePageContent() {
         break;
 
       default:
-        // Kategoriya bo'yicha filterlash
         if (filter) {
           filtered = filtered.filter(video => 
             video.meta.category?.toLowerCase().includes(filter.toLowerCase())
           );
         }
-        // Kategoriya ichida eng yangi videolar tepada
         filtered.sort((a, b) => {
           const dateA = new Date(a.meta.uploadedAt || a.created);
           const dateB = new Date(b.meta.uploadedAt || b.created);
@@ -712,15 +685,13 @@ function HomePageContent() {
     }
 
     setFilteredVideos(filtered);
-    // Sahifani qayta 1 ga o'rnatish va dastlabki videolarni ko'rsatish
     setPage(1);
     setDisplayedVideos(filtered.slice(0, videosPerPage));
     setHasMore(filtered.length > videosPerPage);
     
-    // Loading holatini o'chiramiz
     setTimeout(() => {
       setIsLoading(false);
-    }, 300); // Loading vaqtini 300ms ga tushirdim
+    }, 300);
   };
 
   const handleSearch = (query: string) => {
@@ -735,6 +706,7 @@ function HomePageContent() {
           onFilterChange={(filter) => setActiveFilter(filter)}
         />
         <div className="container mx-auto px-4 pt-24 pb-8">
+          {/* Skeleton grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(12)].map((_, index) => (
               <VideoSkeleton key={index} />
@@ -910,23 +882,20 @@ function HomePageContent() {
         {/* Video grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {isLoading ? (
-            // Loading holatida skeleton ko'rsatamiz
             [...Array(12)].map((_, index) => (
               <VideoSkeleton key={index} />
             ))
           ) : displayedVideos.length === 0 ? (
-            // Videolar topilmagan holat
             <div className="col-span-full text-center py-12">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#1F2937] mb-4">
                 <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-300 mb-2">Videolar topilmadi</h3>
-              <p className="text-gray-400">Ushbu kategoriya bo'yicha videolar mavjud emas</p>
+              <h3 className="text-xl font-semibold text-gray-300 mb-2">Videos not found</h3>
+              <p className="text-gray-400">There are no videos in this category</p>
             </div>
           ) : (
-            // Videolarni ko'rsatish
             displayedVideos.map((video) => (
               <div
                 key={video.uid}
@@ -963,49 +932,55 @@ function HomePageContent() {
                         allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                       />
                     </div>
-                    {/* Video duration overlay */}
-                    <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/80 rounded text-xs text-white">
-                      {Math.floor(video.duration / 60)}:
-                      {String(Math.floor(video.duration % 60)).padStart(2, '0')}
+                    {/* Video duration and quality overlay */}
+                    <div className="absolute bottom-2 right-2 flex items-center gap-2">
+                      <div className="px-2 py-1 bg-black/80 rounded text-xs text-white">
+                        {Math.floor(video.duration / 60)}:
+                        {String(Math.floor(video.duration % 60)).padStart(2, '0')}
+                      </div>
+                      <div className="px-2 py-1 bg-emerald-500/80 rounded text-xs font-medium text-white">
+                        HD
+                      </div>
                     </div>
                   </div>
                 </Link>
 
                 {/* Video info */}
-                <div className="p-4 space-y-3">
+                <div className="p-3 space-y-2">
                   <Link href={`/watch/${video.uid}`} className="block">
-                    <h2 className="text-lg font-semibold text-white hover:text-cyan-400 transition-colors">
+                    <h2 className="text-base font-medium text-white hover:text-cyan-400 transition-colors line-clamp-1">
                       {video.meta.name || 'Untitled Video'}
                     </h2>
                   </Link>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-1 text-gray-400">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
                         <span>{video.meta.views || '0'}</span>
                       </div>
                       <div className="flex items-center gap-1 text-gray-400">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                         </svg>
                         <span>{video.meta.likes || '0'}</span>
                       </div>
                     </div>
-                    <div className="text-gray-400">
+                    <div className="text-gray-400 text-xs">
                       {new Date(video.meta.uploadedAt || video.created).toLocaleDateString()}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {video.meta.category?.split(',').map((category) => (
-                      <span
+                      <button
                         key={category}
-                        className="px-2 py-1 bg-[#1F2937] rounded-full text-xs text-gray-400"
+                        onClick={() => setActiveFilter(category.trim().toLowerCase())}
+                        className="px-1.5 py-0.5 bg-[#1F2937] rounded-full text-[10px] text-gray-400 whitespace-nowrap hover:bg-gradient-to-r hover:from-emerald-400 hover:to-cyan-400 hover:text-white transition-all hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/20"
                       >
                         {category.trim()}
-                      </span>
+                      </button>
                     ))}
                   </div>
                 </div>

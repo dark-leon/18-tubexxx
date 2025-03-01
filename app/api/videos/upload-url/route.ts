@@ -4,7 +4,6 @@ export async function POST(request: Request) {
   try {
     const { metadata } = await request.json();
 
-    // TUS upload URL olish
     const tusResponse = await fetch(
       `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream?direct_user=true`,
       {

@@ -23,7 +23,7 @@ export default function CategorySelect({ selectedCategories, onChange }: Categor
       setCategories(fetchedCategories);
       setIsLoading(false);
     } catch (err) {
-      setError('Kategoriyalarni yuklashda xatolik yuz berdi');
+      setError('Error loading categories');
       setIsLoading(false);
     }
   };
@@ -39,7 +39,7 @@ export default function CategorySelect({ selectedCategories, onChange }: Categor
       // Yangi kategoriyani avtomatik ravishda tanlangan kategoriyalarga qo'shamiz
       onChange([...selectedCategories, addedCategory.id]);
     } catch (err) {
-      setError('Yangi kategoriya qo\'shishda xatolik yuz berdi');
+      setError('Error adding new category');
     }
   };
 
@@ -51,7 +51,7 @@ export default function CategorySelect({ selectedCategories, onChange }: Categor
     onChange(updatedCategories);
   };
 
-  if (isLoading) return <div className="text-gray-400">Yuklanmoqda...</div>;
+  if (isLoading) return <div className="text-gray-400">Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
@@ -62,7 +62,7 @@ export default function CategorySelect({ selectedCategories, onChange }: Categor
           value=""
           onChange={(e) => handleCategoryChange(e.target.value)}
         >
-          <option value="" disabled>Kategoriyani tanlang</option>
+          <option value="" disabled>Select a category</option>
           {categories.map((category) => (
             <option 
               key={category.id} 
@@ -106,7 +106,7 @@ export default function CategorySelect({ selectedCategories, onChange }: Categor
             type="text"
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
-            placeholder="Yangi kategoriya nomi..."
+            placeholder="New category name..."
             className="flex-1 px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
           <button
@@ -118,7 +118,7 @@ export default function CategorySelect({ selectedCategories, onChange }: Categor
                 : 'bg-gray-700 text-gray-400 cursor-not-allowed'
             }`}
           >
-            Qo'shish
+            Add
           </button>
           <button
             onClick={() => {
@@ -127,7 +127,7 @@ export default function CategorySelect({ selectedCategories, onChange }: Categor
             }}
             className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg"
           >
-            Bekor qilish
+            Cancel
           </button>
         </div>
       ) : (
@@ -138,7 +138,7 @@ export default function CategorySelect({ selectedCategories, onChange }: Categor
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          Yangi kategoriya qo'shish
+          Add new category
         </button>
       )}
     </div>

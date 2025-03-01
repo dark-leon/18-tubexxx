@@ -167,9 +167,10 @@ export default function WatchPage({ params }: PageProps) {
       <div className="fixed inset-0 bg-[url('/dots.png')] opacity-[0.03] mix-blend-screen pointer-events-none"></div>
       <Navbar onSearch={handleSearch} />
       <main className="container mx-auto px-4 pt-24 pb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           {/* Video player section */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="xl:col-span-3 space-y-6">
+            {/* Video player */}
             <div className="aspect-video relative rounded-lg overflow-hidden bg-[#111827]/60 backdrop-blur-sm ring-1 ring-cyan-950">
               <iframe
                 src={`https://iframe.videodelivery.net/${currentVideo.uid}`}
@@ -188,196 +189,173 @@ export default function WatchPage({ params }: PageProps) {
                 }}
               />
             </div>
-            <div className="space-y-4">
+
+            {/* Video info */}
+            <div className="space-y-4 bg-[#111827]/60 backdrop-blur-sm rounded-lg p-4 ring-1 ring-cyan-950">
               <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
                 {currentVideo.meta.name || 'Untitled video'}
               </h1>
-              {currentVideo.meta.description && (
-                <p className="text-sm sm:text-base text-gray-400">{currentVideo.meta.description}</p>
-              )}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="flex flex-wrap items-center gap-4 text-gray-400">
-                  <span className="flex items-center text-sm">
-                    <svg
-                      className="w-5 h-5 mr-2 text-cyan-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
-                    </svg>
-                    {currentVideo.meta.views || '0'} views
-                  </span>
-                  <span className="flex items-center text-sm">
-                    <svg
-                      className="w-5 h-5 mr-2 text-cyan-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    {Math.floor(currentVideo.duration / 60)}:
-                    {String(Math.floor(currentVideo.duration % 60)).padStart(2, '0')}
-                  </span>
-                  {currentVideo.meta.category && (
-                    <div className="flex flex-wrap gap-2">
-                      {currentVideo.meta.category.split(', ').map((category, index) => (
-                        <span key={index} className="text-cyan-400 bg-[#1E293B]/60 backdrop-blur-sm px-2 py-1 rounded-full text-xs sm:text-sm border border-cyan-950">
-                          {category}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div className="flex items-center gap-4">
+              
+              <div className="flex flex-wrap items-center gap-4 text-gray-400 border-b border-cyan-950 pb-4">
+                <span className="flex items-center text-sm">
+                  <svg className="w-5 h-5 mr-2 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  {currentVideo.meta.views || '0'} views
+                </span>
+                <span className="flex items-center text-sm">
+                  <svg className="w-5 h-5 mr-2 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {Math.floor(currentVideo.duration / 60)}:
+                  {String(Math.floor(currentVideo.duration % 60)).padStart(2, '0')}
+                </span>
+                <div className="flex items-center gap-4 ml-auto">
                   <button
                     onClick={onLike}
-                    className={`group flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                       hasLiked
-                        ? 'bg-emerald-400 hover:bg-emerald-500 text-white'
-                        : 'bg-gradient-to-r from-emerald-400/10 to-cyan-400/10 hover:from-emerald-400/20 hover:to-cyan-400/20 border border-emerald-400/20 hover:shadow-emerald-500/20'
+                        ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
+                        : 'text-gray-400 hover:text-white hover:bg-[#1F2937]'
                     }`}
                   >
-                    <svg
-                      className={`w-5 h-5 transition-transform duration-300 group-hover:scale-110 ${
-                        hasLiked ? 'text-white' : 'text-emerald-400 group-hover:text-emerald-300'
-                      }`}
-                      fill={hasLiked ? 'currentColor' : 'none'}
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"
-                      />
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                     </svg>
-                    <span className={`font-medium ${
-                      hasLiked ? 'text-white' : 'text-emerald-400 group-hover:text-emerald-300'
-                    } transition-colors duration-300`}>{currentVideo.meta.likes || '0'}</span>
+                    <span>{currentVideo.meta.likes || '0'}</span>
                   </button>
                   <button
                     onClick={onDislike}
-                    className={`group flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                       hasDisliked
-                        ? 'bg-rose-400 hover:bg-rose-500 text-white'
-                        : 'bg-gradient-to-r from-rose-500/10 to-red-500/10 hover:from-rose-500/20 hover:to-red-500/20 border border-rose-500/20 hover:shadow-rose-500/20'
+                        ? 'bg-gradient-to-r from-pink-500 to-red-500 text-white shadow-lg shadow-red-500/20'
+                        : 'text-gray-400 hover:text-white hover:bg-[#1F2937]'
                     }`}
                   >
-                    <svg
-                      className={`w-5 h-5 transition-transform duration-300 group-hover:scale-110 ${
-                        hasDisliked ? 'text-white' : 'text-rose-400 group-hover:text-rose-300'
-                      }`}
-                      fill={hasDisliked ? 'currentColor' : 'none'}
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3zm7-13h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17" />
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5 0h2a2 2 0 002-2v-6a2 2 0 00-2-2h-2.5" />
                     </svg>
-                    <span className={`font-medium ${
-                      hasDisliked ? 'text-white' : 'text-rose-400 group-hover:text-rose-300'
-                    } transition-colors duration-300`}>{currentVideo.meta.dislikes || '0'}</span>
+                    <span>{currentVideo.meta.dislikes || '0'}</span>
                   </button>
                 </div>
+              </div>
+
+              {currentVideo.meta.description && (
+                <p className="text-sm sm:text-base text-gray-400 pt-4">{currentVideo.meta.description}</p>
+              )}
+
+              {currentVideo.meta.category && (
+                <div className="flex flex-wrap gap-2 pt-4">
+                  {currentVideo.meta.category.split(',').map((category, index) => (
+                    <Link 
+                      key={index} 
+                      href={`/?filter=${encodeURIComponent(category.trim().toLowerCase())}`}
+                      className="text-cyan-400 bg-[#1E293B]/60 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs sm:text-sm border border-cyan-950 hover:bg-gradient-to-r hover:from-emerald-400 hover:to-cyan-400 hover:text-white transition-all hover:border-transparent"
+                    >
+                      {category.trim()}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Bottom recommended videos */}
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold text-white">More videos you might like</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {recommendedVideos.slice(6).map((video) => (
+                  <Link
+                    key={video.uid}
+                    href={`/watch/${video.uid}`}
+                    className="group bg-[#111827]/60 backdrop-blur-sm rounded-lg overflow-hidden hover:ring-1 hover:ring-cyan-400/50 transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/10"
+                  >
+                    <div className="relative aspect-video bg-[#0A0A0F]">
+                      <img
+                        src={`https://videodelivery.net/${video.uid}/thumbnails/thumbnail.jpg?time=${Math.floor(video.duration / 2)}s`}
+                        alt={video.meta.name || 'Video thumbnail'}
+                        className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+                      />
+                      <div className="absolute bottom-2 right-2 flex items-center gap-2">
+                        <div className="px-2 py-1 bg-black/80 rounded text-xs text-white">
+                          {Math.floor(video.duration / 60)}:
+                          {String(Math.floor(video.duration % 60)).padStart(2, '0')}
+                        </div>
+                        <div className="px-2 py-1 bg-emerald-500/80 rounded text-xs font-medium text-white">
+                          HD
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-3 space-y-1">
+                      <h3 className="text-sm font-medium text-white line-clamp-2 group-hover:text-cyan-400 transition-colors">
+                        {video.meta.name || 'Untitled Video'}
+                      </h3>
+                      <div className="flex items-center justify-between text-xs text-gray-400">
+                        <div className="flex items-center gap-3">
+                          <span className="flex items-center gap-1">
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            {video.meta.views || '0'}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                            </svg>
+                            {video.meta.likes || '0'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Recommended videos section */}
-          <div className="lg:col-span-1">
-            <h2 className="text-lg sm:text-xl font-semibold mb-6 bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Recommended Videos</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4">
-              {recommendedVideos.map((video) => (
+          {/* Right sidebar recommended videos */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-white">Up next</h2>
+            <div className="space-y-4">
+              {recommendedVideos.slice(0, 6).map((video) => (
                 <Link
-                  href={`/watch/${video.uid}`}
                   key={video.uid}
-                  className="group block rounded-lg bg-[#111827]/60 backdrop-blur-sm hover:bg-[#1F2937]/80 transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/10 border border-cyan-950 overflow-hidden"
+                  href={`/watch/${video.uid}`}
+                  className="group bg-[#111827]/60 backdrop-blur-sm rounded-lg overflow-hidden hover:ring-1 hover:ring-cyan-400/50 transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/10 flex"
                 >
-                  <div className="relative aspect-video rounded-t-lg overflow-hidden bg-[#0A0A0F]">
+                  <div className="relative w-40 aspect-video bg-[#0A0A0F] flex-shrink-0">
                     <img
                       src={`https://videodelivery.net/${video.uid}/thumbnails/thumbnail.jpg?time=${Math.floor(video.duration / 2)}s`}
                       alt={video.meta.name || 'Video thumbnail'}
                       className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
                     />
-                    {/* Duration overlay */}
-                    <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/80 rounded text-xs text-white">
-                      {Math.floor(video.duration / 60)}:
-                      {String(Math.floor(video.duration % 60)).padStart(2, '0')}
-                    </div>
-                    {/* Play button overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                        <svg
-                          className="w-5 h-5 text-white"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8 5v14l11-7z" />
-                        </svg>
+                    <div className="absolute bottom-2 right-2 flex items-center gap-2">
+                      <div className="px-2 py-1 bg-black/80 rounded text-xs text-white">
+                        {Math.floor(video.duration / 60)}:
+                        {String(Math.floor(video.duration % 60)).padStart(2, '0')}
                       </div>
                     </div>
                   </div>
-                  <div className="p-3">
-                    <h3 className="font-medium text-sm text-gray-100 line-clamp-2 group-hover:text-cyan-400 transition-colors">
-                      {video.meta.name || 'Untitled video'}
+                  <div className="p-3 flex-grow min-w-0">
+                    <h3 className="text-sm font-medium text-white line-clamp-2 group-hover:text-cyan-400 transition-colors mb-2">
+                      {video.meta.name || 'Untitled Video'}
                     </h3>
-                    <div className="flex items-center text-xs text-gray-400 mt-2">
-                      <span className="flex items-center">
-                        <svg
-                          className="w-4 h-4 mr-1 text-cyan-400/75"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                          />
+                    <div className="flex items-center gap-3 text-xs text-gray-400">
+                      <span className="flex items-center gap-1">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
-                        {video.meta.views || '0'} views
+                        {video.meta.views || '0'}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                        </svg>
+                        {video.meta.likes || '0'}
                       </span>
                     </div>
-                    {video.meta.category && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {video.meta.category.split(', ').slice(0, 2).map((category, index) => (
-                          <span
-                            key={index}
-                            className="text-[10px] text-cyan-400 bg-[#1E293B]/60 backdrop-blur-sm px-1.5 py-0.5 rounded-full border border-cyan-950"
-                          >
-                            {category}
-                          </span>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 </Link>
               ))}

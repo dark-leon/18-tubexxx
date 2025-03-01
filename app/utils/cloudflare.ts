@@ -15,6 +15,7 @@ export interface VideoData {
     category?: string;
     description?: string;
     uploadedAt?: string;
+    tags?: string;
   };
   input?: {
     width: number;

@@ -31,11 +31,15 @@ const nextConfig = {
           },
           {
             key: 'Access-Control-Allow-Methods',
-            value: 'GET, POST, OPTIONS'
+            value: 'GET, POST, PUT, DELETE, OPTIONS'
           },
           {
             key: 'Access-Control-Allow-Headers',
-            value: 'X-Requested-With, Content-Type, Authorization'
+            value: 'X-Requested-With, Content-Type, Authorization, X-Forwarded-For, X-Real-IP, X-Forwarded-Proto'
+          },
+          {
+            key: 'Access-Control-Allow-Credentials',
+            value: 'true'
           }
         ]
       }
@@ -49,17 +53,21 @@ const nextConfig = {
   },
   images: {
     domains: ['videodelivery.net', 'cloudflarestream.com'],
-    minimumCacheTTL: 60,
+    unoptimized: true,
+    minimumCacheTTL: 300,
     deviceSizes: [640, 750, 828, 1080, 1200],
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
   },
-  // VPN va proxy serverlar uchun sozlamalar
   experimental: {
-    allowedRevalidateHeaderKeys: ['x-forwarded-for', 'x-real-ip'],
-    trustHostHeader: true,
-    forwardedHostHeader: true
+    largePageDataBytes: 128 * 100000, // 12.8MB
+    optimizeCss: true,
+    scrollRestoration: true,
+    workerThreads: true,
+    optimizeServerReact: true,
   },
-  // Performance optimizations
+  httpAgentOptions: {
+    keepAlive: true,
+  },
   swcMinify: true,
   reactStrictMode: true,
   compiler: {
@@ -67,9 +75,31 @@ const nextConfig = {
   },
   // Cache optimization
   onDemandEntries: {
-    maxInactiveAge: 60 * 60 * 1000,
+    maxInactiveAge: 60 * 60 * 1000, // 1 soat
     pagesBufferLength: 5,
-  }
+  },
+  // VPN va proxy uchun
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: '/api/:path*',
+          destination: '/api/:path*',
+          has: [
+            {
+              type: 'header',
+              key: 'x-forwarded-for',
+            },
+          ],
+        },
+      ],
+    };
+  },
+  // CDN va kesh sozlamalari
+  generateEtags: true,
+  productionBrowserSourceMaps: true,
+  optimizeFonts: true,
+  crossOrigin: 'anonymous',
 };
 
 module.exports = nextConfig; 

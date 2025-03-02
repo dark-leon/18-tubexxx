@@ -2,19 +2,20 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: '18-Tube XXX - Adult Video Platform',
-  description: 'Watch adult videos in HD quality',
-  metadataBase: new URL('https://18-tube.xxx'),
+  title: '18-Tube XXX - Free Adult Videos in HD Quality',
+  description: 'Watch and download free adult videos in HD quality. The best collection of XXX content, daily updates, no ads, and fast streaming.',
+  keywords: 'adult videos, xxx videos, porn videos, free porn, hd porn, streaming porn, xxx content, adult content, porn streaming',
+  metadataBase: new URL('https://18-tubexxx.com'),
   openGraph: {
-    title: '18-Tube XXX - Adult Video Platform',
-    description: 'Watch adult videos in HD quality',
-    url: 'https://18-tube.xxx',
+    title: '18-Tube XXX - Free Adult Videos in HD Quality',
+    description: 'Watch and download free adult videos in HD quality. The best collection of XXX content, daily updates, no ads, and fast streaming.',
+    url: 'https://18-tubexxx.com',
     siteName: '18-Tube XXX',
     images: [
       {
-        url: '/opengraph-image.png',
-        width: 1200,
-        height: 630,
+        url: '/icon-512.png',
+        width: 512,
+        height: 512,
         alt: '18-Tube XXX Logo',
       }
     ],
@@ -23,29 +24,29 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: '18-Tube XXX - Adult Video Platform',
-    description: 'Watch adult videos in HD quality',
-    images: ['/opengraph-image.png'],
+    title: '18-Tube XXX - Free Adult Videos in HD Quality',
+    description: 'Watch and download free adult videos in HD quality. The best collection of XXX content.',
+    images: ['/icon-512.png'],
   },
   icons: {
     icon: [
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon.png', sizes: '32x32', type: 'image/png' },
       { url: '/favicon.ico', sizes: 'any' },
-      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: [
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' }
     ],
     apple: [
-      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
   },
   manifest: '/manifest.json',
-  themeColor: '#030712',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
   robots: {
     index: true,
     follow: true,
+    nocache: true,
     googleBot: {
       index: true,
       follow: true,
@@ -56,10 +57,17 @@ export const metadata: Metadata = {
   },
   verification: {
     google: 'your-google-verification-code',
+    yandex: 'your-yandex-verification-code',
+    other: {
+      me: ['your-personal-domain-verification']
+    }
   },
   alternates: {
     canonical: 'https://www.18-tubexxx.com'
-  }
+  },
+  authors: [{ name: '18-Tube XXX' }],
+  category: 'Adult Entertainment',
+  classification: 'Adult Content'
 };
 
 export default function RootLayout({
@@ -70,8 +78,9 @@ export default function RootLayout({
   const schemaData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "TubeXXX - Free Adult Videos",
+    "name": "18-Tube XXX - Free Adult Videos in HD Quality",
     "url": "https://www.18-tubexxx.com",
+    "description": "Watch and download free adult videos in HD quality. The best collection of XXX content, daily updates, no ads, and fast streaming.",
     "potentialAction": {
       "@type": "SearchAction",
       "target": {
@@ -79,6 +88,20 @@ export default function RootLayout({
         "urlTemplate": "https://www.18-tubexxx.com/search?q={search_term_string}"
       },
       "query-input": "required name=search_term_string"
+    },
+    "sameAs": [
+      "https://twitter.com/18tubexxx",
+      "https://www.instagram.com/18tubexxx"
+    ],
+    "publisher": {
+      "@type": "Organization",
+      "name": "18-Tube XXX - Free Adult Videos in HD Quality",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.18-tubexxx.com/icon-512.png",
+        "width": 512,
+        "height": 512
+      }
     }
   };
 
@@ -86,11 +109,19 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#030712" />
         <link rel="canonical" href="https://www.18-tubexxx.com" />
         <link rel="alternate" hrefLang="x-default" href="https://www.18-tubexxx.com" />
         <link rel="alternate" hrefLang="en" href="https://www.18-tubexxx.com" />
+        <meta name="rating" content="adult" />
+        <meta name="age-rating" content="adult" />
+        <meta name="mature" content="yes" />
+        <meta name="adult" content="yes" />
+        <meta name="rating" content="RTA-5042-1996-1400-1577-RTA" />
+        <link rel="shortcut icon" type="image/png" href="/icon-512.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/icon.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

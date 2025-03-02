@@ -49,8 +49,18 @@ export async function getVideos(): Promise<VideoData[]> {
 
     const data = await response.json();
     
+    if (!data.result || !Array.isArray(data.result)) {
+      console.error('Invalid response format:', data);
+      return [];
+    }
+
     const videos = data.result
-      .filter((video: VideoData) => video.meta?.isApproved !== "false")
+      .filter((video: VideoData) => {
+        // Agar meta mavjud bo'lmasa yoki isApproved undefined bo'lsa, uni ko'rsatamiz
+        if (!video.meta || video.meta.isApproved === undefined) return true;
+        // Agar isApproved "false" bo'lsa, ko'rsatmaymiz
+        return video.meta.isApproved !== "false";
+      })
       .map((video: VideoData) => ({
         ...video,
         meta: {
@@ -58,10 +68,10 @@ export async function getVideos(): Promise<VideoData[]> {
           views: video.meta?.views || '0',
           likes: video.meta?.likes || '0',
           dislikes: video.meta?.dislikes || '0',
-          category: video.meta?.category,
-          categories: video.meta?.categories,
-          description: video.meta?.description,
-          tags: video.meta?.tags,
+          category: video.meta?.category || '',
+          categories: video.meta?.categories || '',
+          description: video.meta?.description || '',
+          tags: video.meta?.tags || '',
           isApproved: video.meta?.isApproved || "true",
           uploadedAt: video.meta?.uploadedAt || video.created
         }

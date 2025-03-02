@@ -189,12 +189,12 @@ export default function WatchPage({ params }: PageProps) {
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.05)_0%,rgba(6,182,212,0.05)_100%)] pointer-events-none"></div>
       <div className="fixed inset-0 bg-[url('/dots.png')] opacity-[0.03] mix-blend-screen pointer-events-none"></div>
       <Navbar onSearch={handleSearch} />
-      <main className="container mx-auto px-2 sm:px-4 pt-20 sm:pt-24 pb-8">
+      <main className="container mx-auto px-4 pt-16 sm:pt-24 pb-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
           {/* Video player section */}
           <div className="lg:col-span-3 space-y-4 sm:space-y-6">
             {/* Video player */}
-            <div className="aspect-video relative rounded-lg overflow-hidden bg-[#111827]/60 backdrop-blur-sm ring-1 ring-cyan-950">
+            <div className="aspect-video relative -mx-4 sm:mx-0 rounded-none sm:rounded-lg overflow-hidden bg-[#111827]/60 backdrop-blur-sm ring-0 sm:ring-1 ring-cyan-950">
               <iframe
                 src={`https://iframe.videodelivery.net/${currentVideo.uid}`}
                 className="w-full h-full absolute top-0 left-0"
@@ -214,7 +214,7 @@ export default function WatchPage({ params }: PageProps) {
             </div>
 
             {/* Video info */}
-            <div className="space-y-4 bg-[#111827]/60 backdrop-blur-sm rounded-lg p-3 sm:p-4 ring-1 ring-cyan-950">
+            <div className="space-y-4 bg-[#111827]/60 backdrop-blur-sm rounded-none sm:rounded-lg p-3 sm:p-4 ring-0 sm:ring-1 ring-cyan-950">
               <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
                 {currentVideo.meta.name || 'Untitled video'}
               </h1>

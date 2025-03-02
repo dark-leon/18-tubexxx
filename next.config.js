@@ -60,10 +60,19 @@ const nextConfig = {
   },
   experimental: {
     largePageDataBytes: 128 * 100000, // 12.8MB
-    optimizeCss: true,
+    optimizeCss: {
+      enabled: true,
+      cssModules: true,
+      inlineThreshold: 4096,
+      inlineFonts: true,
+      pruneSource: true,
+      mergeStylesheets: true,
+      reduceInlineStyles: true,
+      compressCSS: true
+    },
     scrollRestoration: true,
     workerThreads: true,
-    optimizeServerReact: true,
+    optimizeServerReact: true
   },
   httpAgentOptions: {
     keepAlive: true,

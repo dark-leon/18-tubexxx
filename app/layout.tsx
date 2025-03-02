@@ -2,31 +2,46 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.18-tubexxx.com'),
-  title: '18+ Free Adult Videos - Watch HD Porn Videos Online',
-  description: 'Watch free adult videos in HD quality. Stream or download porn videos featuring amateur, anal, asian, big ass, big tits, blowjob, and more categories.',
-  keywords: 'porn videos, adult videos, xxx videos, free porn, hd porn, streaming porn, download porn',
+  title: '18-Tube XXX - Adult Video Platform',
+  description: 'Watch adult videos in HD quality',
+  metadataBase: new URL('https://18-tube.xxx'),
   openGraph: {
-    title: '18+ Free Adult Videos - Watch HD Porn Videos Online',
-    description: 'Watch free adult videos in HD quality. Stream or download porn videos featuring amateur, anal, asian, big ass, big tits, blowjob, and more categories.',
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://www.18-tubexxx.com',
-    siteName: 'TubeXXX - Free Adult Videos',
+    title: '18-Tube XXX - Adult Video Platform',
+    description: 'Watch adult videos in HD quality',
+    url: 'https://18-tube.xxx',
+    siteName: '18-Tube XXX',
     images: [
       {
-        url: 'https://www.18-tubexxx.com/og-image.jpg',
+        url: '/opengraph-image.png',
         width: 1200,
         height: 630,
-        alt: 'TubeXXX - Adult Video Site Preview'
+        alt: '18-Tube XXX Logo',
       }
-    ]
+    ],
+    locale: 'en_US',
+    type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: '18+ Free Adult Videos - Watch HD Porn Videos Online',
-    description: 'Watch free adult videos in HD quality. Stream or download porn videos featuring amateur, anal, asian, big ass, big tits, blowjob, and more categories.',
-    images: ['https://www.18-tubexxx.com/twitter-image.jpg']
+    title: '18-Tube XXX - Adult Video Platform',
+    description: 'Watch adult videos in HD quality',
+    images: ['/opengraph-image.png'],
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+  manifest: '/manifest.json',
+  themeColor: '#030712',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
   },
   robots: {
     index: true,

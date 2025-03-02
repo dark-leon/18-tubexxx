@@ -16,6 +16,7 @@ export interface VideoData {
     description?: string;
     uploadedAt?: string;
     tags?: string;
+    isApproved?: string;
   };
   input?: {
     width: number;
@@ -48,18 +49,23 @@ export async function getVideos(): Promise<VideoData[]> {
 
     const data = await response.json();
     
-    const videos = data.result.map((video: VideoData) => ({
-      ...video,
-      meta: {
-        name: video.meta?.name || '18+ Free Adult Video',
-        views: video.meta?.views || '0',
-        likes: video.meta?.likes || '0',
-        dislikes: video.meta?.dislikes || '0',
-        category: video.meta?.category,
-        description: video.meta?.description,
-        uploadedAt: video.meta?.uploadedAt || video.created
-      }
-    }));
+    const videos = data.result
+      .filter((video: VideoData) => video.meta?.isApproved !== "false")
+      .map((video: VideoData) => ({
+        ...video,
+        meta: {
+          name: video.meta?.name || '18+ Free Adult Video',
+          views: video.meta?.views || '0',
+          likes: video.meta?.likes || '0',
+          dislikes: video.meta?.dislikes || '0',
+          category: video.meta?.category,
+          categories: video.meta?.categories,
+          description: video.meta?.description,
+          tags: video.meta?.tags,
+          isApproved: video.meta?.isApproved || "true",
+          uploadedAt: video.meta?.uploadedAt || video.created
+        }
+      }));
 
     return videos;
   } catch (error) {
@@ -102,12 +108,13 @@ export const defaultCategories: Category[] = [
   }
 ];
 
-interface VideoMeta {
+export interface VideoMeta {
   name?: string;
   description?: string;
   category?: string;
   categories?: string;
   tags?: string;
+  isApproved?: string;
   views?: string;
   likes?: string;
   dislikes?: string;

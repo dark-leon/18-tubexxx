@@ -110,7 +110,13 @@ function AdminPageContent() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Admin Panel</h1>
           <div className="flex items-center gap-4 w-full md:w-auto">
             <Link
-              href="/admin/upload"
+              href="/admin/videos/pending"
+              className="px-4 py-2.5 bg-gradient-to-r from-emerald-400 to-cyan-400 hover:from-cyan-400 hover:to-emerald-400 rounded-lg text-white transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap"
+            >
+              Tasdiqlanmagan Videolar
+            </Link>
+            <Link
+              href="/admin/videos/upload"
               className="px-4 py-2.5 bg-gradient-to-r from-emerald-400 to-cyan-400 hover:from-cyan-400 hover:to-emerald-400 rounded-lg text-white transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap"
             >
               + Video yuklash

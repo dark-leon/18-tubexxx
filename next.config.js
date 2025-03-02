@@ -59,20 +59,10 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
   },
   experimental: {
-    largePageDataBytes: 128 * 100000, // 12.8MB
-    optimizeCss: {
-      enabled: true,
-      cssModules: true,
-      inlineThreshold: 4096,
-      inlineFonts: true,
-      pruneSource: true,
-      mergeStylesheets: true,
-      reduceInlineStyles: true,
-      compressCSS: true
-    },
+    largePageDataBytes: 128 * 100000,
+    optimizeCss: true,
     scrollRestoration: true,
-    workerThreads: true,
-    optimizeServerReact: true
+    workerThreads: true
   },
   httpAgentOptions: {
     keepAlive: true,
@@ -82,12 +72,10 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  // Cache optimization
   onDemandEntries: {
-    maxInactiveAge: 60 * 60 * 1000, // 1 soat
+    maxInactiveAge: 60 * 60 * 1000,
     pagesBufferLength: 5,
   },
-  // VPN va proxy uchun
   async rewrites() {
     return {
       beforeFiles: [
@@ -104,7 +92,6 @@ const nextConfig = {
       ],
     };
   },
-  // CDN va kesh sozlamalari
   generateEtags: true,
   productionBrowserSourceMaps: true,
   optimizeFonts: true,

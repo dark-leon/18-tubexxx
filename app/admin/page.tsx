@@ -119,7 +119,7 @@ function AdminPageContent() {
               href="/admin/videos/upload"
               className="px-4 py-2.5 bg-gradient-to-r from-emerald-400 to-cyan-400 hover:from-cyan-400 hover:to-emerald-400 rounded-lg text-white transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap"
             >
-              + Video yuklash
+              + Upload Video
             </Link>
             <div className="relative flex-1 md:w-64">
               <Suspense fallback={

@@ -376,7 +376,7 @@ function UploadPageContent() {
       <main className="container mx-auto px-4 pt-24 pb-8">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-            Video Yuklash
+            Upload Video
           </h1>
           <p className="text-gray-400 text-center mb-8">
             Yangi video yuklash uchun quyidagi formani to'ldiring

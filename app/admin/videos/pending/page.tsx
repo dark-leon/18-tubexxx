@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getPendingVideos, updateVideoMeta } from '../../../utils/cloudflare';
+import { getPendingVideos, updateVideoMeta, deleteVideo } from '../../../utils/cloudflare';
 import type { VideoData } from '../../../utils/cloudflare';
 import Navbar from '../../../components/Navbar';
 
@@ -12,6 +12,7 @@ export default function PendingVideosPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [approvingVideo, setApprovingVideo] = useState<string | null>(null);
+  const [deletingVideo, setDeletingVideo] = useState<string | null>(null);
 
   useEffect(() => {
     fetchVideos();
@@ -49,6 +50,24 @@ export default function PendingVideosPage() {
       alert('Videoni tasdiqlashda xatolik yuz berdi. Iltimos qaytadan urinib ko\'ring.');
     } finally {
       setApprovingVideo(null);
+    }
+  };
+
+  const handleDeleteVideo = async (video: VideoData) => {
+    if (!confirm('Ushbu videoni o\'chirishni xohlaysizmi?')) {
+      return;
+    }
+
+    setDeletingVideo(video.uid);
+    try {
+      await deleteVideo(video.uid);
+      // Videoni ro'yxatdan olib tashlash
+      setVideos(prevVideos => prevVideos.filter(v => v.uid !== video.uid));
+    } catch (err) {
+      console.error('Videoni o\'chirishda xatolik:', err);
+      alert('Videoni o\'chirishda xatolik yuz berdi. Iltimos qaytadan urinib ko\'ring.');
+    } finally {
+      setDeletingVideo(null);
     }
   };
 
@@ -132,7 +151,7 @@ export default function PendingVideosPage() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleApproveVideo(video)}
-                          disabled={approvingVideo === video.uid}
+                          disabled={approvingVideo === video.uid || deletingVideo === video.uid}
                           className={`px-4 py-2 rounded-lg transition-all ${
                             approvingVideo === video.uid
                               ? 'bg-emerald-500/50 cursor-not-allowed'
@@ -140,6 +159,17 @@ export default function PendingVideosPage() {
                           }`}
                         >
                           {approvingVideo === video.uid ? 'Tasdiqlanmoqda...' : 'Tasdiqlash'}
+                        </button>
+                        <button
+                          onClick={() => handleDeleteVideo(video)}
+                          disabled={approvingVideo === video.uid || deletingVideo === video.uid}
+                          className={`px-4 py-2 rounded-lg transition-all ${
+                            deletingVideo === video.uid
+                              ? 'bg-red-500/50 cursor-not-allowed'
+                              : 'bg-gradient-to-r from-red-400 to-pink-400 hover:from-pink-400 hover:to-red-400 shadow-lg shadow-red-500/20'
+                          }`}
+                        >
+                          {deletingVideo === video.uid ? 'O\'chirilmoqda...' : 'O\'chirish'}
                         </button>
                       </div>
                     </div>

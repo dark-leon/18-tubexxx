@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   },
   verification: {
     google: 'your-google-verification-code',
-    yandex: 'your-yandex-verification-code',
+    yandex: '08d2a85c78474d34',
     other: {
       me: ['your-personal-domain-verification']
     }

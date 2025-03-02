@@ -41,7 +41,7 @@
     --border: #262626;
   }
 }
-
+    
 @layer base {
   * {
     @apply border-border;

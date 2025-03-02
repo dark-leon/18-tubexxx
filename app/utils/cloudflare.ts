@@ -400,3 +400,60 @@ export async function uploadVideo(
     xhr.send(formData);
   });
 }
+
+export async function getPendingVideos(): Promise<VideoData[]> {
+  try {
+    const response = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/stream`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_CLOUDFLARE_API_TOKEN}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API Error Response:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText
+      });
+      throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.result || !Array.isArray(data.result)) {
+      console.error('Invalid response format:', data);
+      return [];
+    }
+
+    const videos = data.result
+      .filter((video: VideoData) => {
+        // Faqat isApproved=false bo'lgan videolarni qaytarish
+        return video.meta?.isApproved === "false";
+      })
+      .map((video: VideoData) => ({
+        ...video,
+        meta: {
+          name: video.meta?.name || '18+ Free Adult Video',
+          views: video.meta?.views || '0',
+          likes: video.meta?.likes || '0',
+          dislikes: video.meta?.dislikes || '0',
+          category: video.meta?.category || '',
+          categories: video.meta?.categories || '',
+          description: video.meta?.description || '',
+          tags: video.meta?.tags || '',
+          isApproved: "false",
+          uploadedAt: video.meta?.uploadedAt || video.created
+        }
+      }));
+
+    console.log('Tasdiqlanmagan videolar:', videos.length);
+    return videos;
+  } catch (error) {
+    console.error('Error fetching pending videos:', error);
+    throw error;
+  }
+}

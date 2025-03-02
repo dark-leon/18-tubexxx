@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getVideos, updateVideoMeta } from '../../../utils/cloudflare';
+import { getPendingVideos, updateVideoMeta } from '../../../utils/cloudflare';
 import type { VideoData } from '../../../utils/cloudflare';
 import Navbar from '../../../components/Navbar';
 
@@ -19,9 +19,8 @@ export default function PendingVideosPage() {
 
   const fetchVideos = async () => {
     try {
-      const allVideos = await getVideos();
-      // Faqat tasdiqlanmagan videolarni filtrlash
-      const pendingVideos = allVideos.filter(video => video.meta.isApproved === "false");
+      const pendingVideos = await getPendingVideos();
+      console.log('Olingan videolar:', pendingVideos.length);
       setVideos(pendingVideos);
     } catch (err) {
       console.error('Videolarni yuklashda xatolik:', err);

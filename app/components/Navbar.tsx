@@ -49,13 +49,13 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="text-xl font-bold text-white flex items-center space-x-2 group">
             <div className="flex items-center">
-              <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent text-2xl font-extrabold tracking-tight group-hover:scale-105 transition-transform">
+              <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent text-lg sm:text-2xl font-extrabold tracking-tight group-hover:scale-105 transition-transform duration-300">
                 18-Tube
               </span>
-              <span className="bg-gradient-to-r from-pink-500 via-red-500 to-pink-500 bg-clip-text text-transparent text-2xl font-extrabold tracking-tight group-hover:scale-105 transition-transform">
+              <span className="bg-gradient-to-r from-pink-500 via-red-500 to-pink-500 bg-clip-text text-transparent text-lg sm:text-2xl font-extrabold tracking-tight group-hover:scale-105 transition-transform duration-300">
                 XXX
               </span>
-              <div className="ml-1 h-2 w-2 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 group-hover:animate-ping"></div>
+              <div className="ml-1 h-1.5 sm:h-2 w-1.5 sm:w-2 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 group-hover:animate-ping"></div>
             </div>
           </Link>
 
@@ -67,14 +67,14 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
                 placeholder="Search videos..."
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="w-full bg-[#111827]/60 backdrop-blur-sm text-white pl-4 pr-10 py-2 rounded-full focus:outline-none focus:ring-1 focus:ring-cyan-400/50 border border-cyan-950 hover:border-cyan-800/50 transition-colors"
+                className="w-full bg-[#111827]/60 backdrop-blur-sm text-white pl-4 pr-10 py-2 rounded-full focus:outline-none focus:ring-1 focus:ring-cyan-400/50 border border-cyan-950 hover:border-cyan-800/50 transition-colors text-sm sm:text-base"
               />
               <button
                 type="submit"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
               >
                 <svg
-                  className="w-5 h-5"
+                  className="w-4 h-4 sm:w-5 sm:h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -95,7 +95,7 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
             <div className="ml-10 flex items-baseline space-x-4">
               <button
                 onClick={() => handleFilterClick('all')}
-                className={`text-gray-400 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
+                className={`text-gray-400 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 flex items-center gap-2 hover:bg-[#1F2937]/80 ${
                   pathname === '/' && (!searchParams.get('filter') || searchParams.get('filter') === 'all')
                     ? 'text-emerald-400'
                     : ''
@@ -108,7 +108,7 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
               </button>
               <button
                 onClick={() => handleFilterClick('popular')}
-                className={`text-gray-400 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
+                className={`text-gray-400 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 flex items-center gap-2 hover:bg-[#1F2937]/80 ${
                   searchParams.get('filter') === 'popular' ? 'text-emerald-400' : ''
                 }`}
               >
@@ -119,7 +119,7 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
               </button>
               <button
                 onClick={() => handleFilterClick('new')}
-                className={`text-gray-400 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
+                className={`text-gray-400 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 flex items-center gap-2 hover:bg-[#1F2937]/80 ${
                   searchParams.get('filter') === 'new' ? 'text-emerald-400' : ''
                 }`}
               >
@@ -130,7 +130,7 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
               </button>
               <button
                 onClick={() => handleFilterClick('liked')}
-                className={`text-gray-400 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
+                className={`text-gray-400 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 flex items-center gap-2 hover:bg-[#1F2937]/80 ${
                   searchParams.get('filter') === 'liked' ? 'text-emerald-400' : ''
                 }`}
               >
@@ -146,7 +146,7 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
           <div className="hidden md:flex items-center space-x-4">
             <Link
               href="/upload"
-              className="px-4 py-2 bg-gradient-to-r from-pink-500 to-red-500 hover:from-red-500 hover:to-pink-500 rounded-lg text-white transition-all shadow-lg shadow-red-500/20 flex items-center space-x-2"
+              className="px-4 py-2 bg-gradient-to-r from-pink-500 to-red-500 hover:from-red-500 hover:to-pink-500 rounded-lg text-white transition-all duration-300 shadow-lg shadow-red-500/20 hover:shadow-red-500/30 hover:scale-105 flex items-center space-x-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -155,7 +155,7 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
             </Link>
             <Link
               href="/admin/login"
-              className="px-4 py-2 bg-gradient-to-r from-emerald-400 to-cyan-400 hover:from-cyan-400 hover:to-emerald-400 rounded-lg text-white transition-all shadow-lg shadow-emerald-500/20"
+              className="px-4 py-2 bg-gradient-to-r from-emerald-400 to-cyan-400 hover:from-cyan-400 hover:to-emerald-400 rounded-lg text-white transition-all duration-300 shadow-lg shadow-emerald-500/20 hover:shadow-cyan-500/30 hover:scale-105"
             >
               Login
             </Link>
@@ -165,7 +165,8 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
           <div className="md:hidden flex items-center space-x-2">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-400 hover:text-white focus:outline-none p-2"
+              className="text-gray-400 hover:text-white focus:outline-none p-2 rounded-lg hover:bg-[#1F2937]/80 transition-all duration-300"
+              aria-label="Toggle menu"
             >
               <svg
                 className="h-6 w-6"
@@ -197,10 +198,13 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
         {isMenuOpen && (
           <div className="md:hidden">
             {/* Mobile Navigation Links */}
-            <div className="px-2 pb-3 space-y-1">
+            <div className="px-2 pb-3 space-y-1 bg-[#111827]/60 backdrop-blur-sm rounded-lg border border-cyan-950 mt-2">
               <button
-                onClick={() => handleFilterClick('all')}
-                className={`w-full text-left text-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 ${
+                onClick={() => {
+                  handleFilterClick('all');
+                  setIsMenuOpen(false);
+                }}
+                className={`w-full text-left text-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-colors ${
                   pathname === '/' && (!searchParams.get('filter') || searchParams.get('filter') === 'all')
                     ? 'text-emerald-400'
                     : ''
@@ -212,8 +216,11 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
                 <span>Trending</span>
               </button>
               <button
-                onClick={() => handleFilterClick('popular')}
-                className={`w-full text-left text-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 ${
+                onClick={() => {
+                  handleFilterClick('popular');
+                  setIsMenuOpen(false);
+                }}
+                className={`w-full text-left text-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-colors ${
                   searchParams.get('filter') === 'popular' ? 'text-emerald-400' : ''
                 }`}
               >
@@ -223,8 +230,11 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
                 <span>Popular</span>
               </button>
               <button
-                onClick={() => handleFilterClick('new')}
-                className={`w-full text-left text-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 ${
+                onClick={() => {
+                  handleFilterClick('new');
+                  setIsMenuOpen(false);
+                }}
+                className={`w-full text-left text-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-colors ${
                   searchParams.get('filter') === 'new' ? 'text-emerald-400' : ''
                 }`}
               >
@@ -234,8 +244,11 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
                 <span>New</span>
               </button>
               <button
-                onClick={() => handleFilterClick('liked')}
-                className={`w-full text-left text-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 ${
+                onClick={() => {
+                  handleFilterClick('liked');
+                  setIsMenuOpen(false);
+                }}
+                className={`w-full text-left text-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-colors ${
                   searchParams.get('filter') === 'liked' ? 'text-emerald-400' : ''
                 }`}
               >
@@ -247,13 +260,15 @@ function NavbarContent({ onSearch, onFilterChange }: NavbarProps) {
               <div className="border-t border-cyan-950 my-2"></div>
               <Link
                 href="/upload"
-                className="block text-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setIsMenuOpen(false)}
+                className="block text-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium transition-colors"
               >
                 Upload Video
               </Link>
               <Link
                 href="/admin/login"
-                className="block text-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setIsMenuOpen(false)}
+                className="block text-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium transition-colors"
               >
                 Login
               </Link>

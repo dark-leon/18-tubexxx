@@ -46,6 +46,20 @@ function VideoGrid() {
   const videosPerPage = 30;
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [showAllCategories, setShowAllCategories] = useState(false);
+
+  // Kategoriyalar guruhlari
+  const mainCategories = ['Amateur', 'Asian', 'Blonde', 'Brunette', 'Ebony'];
+  const features = ['Big Ass', 'Big Tits', 'Verified'];
+  const actions = ['Anal', 'Blowjob', 'Hardcore', 'Lesbian', 'POV'];
+  const pornstars = ['Eva Elfie', 'Lana Rhoades', 'Mia Khalifa', 'Riley Reid'];
+
+  const allCategories = {
+    main: ['Amateur', 'Asian', 'Blonde', 'Brunette', 'Ebony', 'Latina', 'MILF', 'Redhead', 'Russian', 'Teen'],
+    features: ['Big Ass', 'Big Tits', 'Real', 'Verified'],
+    actions: ['Anal', 'Blowjob', 'Creampie', 'Cumshot', 'DeepThroat', 'Doggystyle', 'Facial', 'Hardcore', 'Interracial', 'Lesbian', 'Masturbation', 'Orgasm', 'POV', 'Public', 'Solo', 'Squirt', 'Threesome', 'Toys'],
+    pornstars: ['Abella Danger', 'Adriana Chechik', 'Angela White', 'Asa Akira', 'Brandi Love', 'Dani Daniels', 'Eva Elfie', 'Gabbie Carter', 'Jia Lissa', 'Johnny Sins', 'Lana Rhoades', 'Lisa Ann', 'Mia Khalifa', 'Mia Malkova', 'Nicole Aniston', 'Riley Reid', 'Sasha Grey', 'Valentina Nappi']
+  };
 
   useEffect(() => {
     fetchVideos();
@@ -252,138 +266,98 @@ function VideoGrid() {
         onSearch={handleSearch} 
         onFilterChange={(filter) => setActiveFilter(filter)}
       />
-      <main className="container mx-auto px-4 pt-24 pb-8 relative">
-        {/* Kategoriya tugmalari */}
-        <div className="flex flex-wrap justify-center gap-4 mb-8">
-          {/* All Videos tugmasi */}
+      <div className="w-full px-2 sm:px-4 pt-20 pb-8">
+        {/* Kategoriyalar menyusi */}
+        <div className="flex flex-wrap justify-center gap-1.5 mb-6">
+          {/* Asosiy tugma */}
           <button
             onClick={() => setActiveFilter('all')}
-            className={`px-4 py-2 rounded-lg transition-all ${
+            className={`px-1.5 py-0.5 rounded text-[10px] transition-all ${
               activeFilter === 'all'
                 ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
                 : 'bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10'
             }`}
           >
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center gap-1">
+              <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
               </svg>
-              <span>All Videos (18+)</span>
+              <span>All Videos 18+</span>
             </div>
           </button>
 
-          {/* Main Categories dropdown */}
-          <div className="relative group">
+          {/* Asosiy kategoriyalar */}
+          {(showAllCategories ? allCategories.main : mainCategories).map((category) => (
             <button
-              className={`px-4 py-2 rounded-lg transition-all bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10 flex items-center gap-2`}
+              key={category}
+              onClick={() => setActiveFilter(category.toLowerCase())}
+              className={`px-1.5 py-0.5 rounded text-[10px] transition-all ${
+                activeFilter === category.toLowerCase()
+                  ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
+                  : 'bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10'
+              }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-              <span>Main</span>
+              {category}
             </button>
-            <div className="absolute z-50 left-0 mt-2 w-48 rounded-lg bg-[#1F2937] shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2">
-              {['Amateur', 'Asian', 'Blonde', 'Brunette', 'Ebony', 'Latina', 'MILF', 'Redhead', 'Russian', 'Teen'].map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setActiveFilter(category.toLowerCase())}
-                  className={`w-full px-4 py-2 text-left transition-all ${
-                    activeFilter === category.toLowerCase()
-                      ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white'
-                      : 'text-gray-400 hover:text-white hover:bg-[#111827]'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
+          ))}
 
-          {/* Features dropdown */}
-          <div className="relative group">
+          {/* Xususiyatlar */}
+          {(showAllCategories ? allCategories.features : features).map((category) => (
             <button
-              className={`px-4 py-2 rounded-lg transition-all bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10 flex items-center gap-2`}
+              key={category}
+              onClick={() => setActiveFilter(category.toLowerCase())}
+              className={`px-1.5 py-0.5 rounded text-[10px] transition-all ${
+                activeFilter === category.toLowerCase()
+                  ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
+                  : 'bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10'
+              }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-              <span>Features</span>
+              {category}
             </button>
-            <div className="absolute z-50 left-0 mt-2 w-48 rounded-lg bg-[#1F2937] shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2">
-              {['Big Ass', 'Big Tits', 'Real', 'Verified'].map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setActiveFilter(category.toLowerCase())}
-                  className={`w-full px-4 py-2 text-left transition-all ${
-                    activeFilter === category.toLowerCase()
-                      ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white'
-                      : 'text-gray-400 hover:text-white hover:bg-[#111827]'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
+          ))}
 
-          {/* Actions dropdown */}
-          <div className="relative group">
+          {/* Harakatlar */}
+          {(showAllCategories ? allCategories.actions : actions).map((category) => (
             <button
-              className={`px-4 py-2 rounded-lg transition-all bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10 flex items-center gap-2`}
+              key={category}
+              onClick={() => setActiveFilter(category.toLowerCase())}
+              className={`px-1.5 py-0.5 rounded text-[10px] transition-all ${
+                activeFilter === category.toLowerCase()
+                  ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
+                  : 'bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10'
+              }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-              <span>Actions</span>
+              {category}
             </button>
-            <div className="absolute z-50 left-0 mt-2 w-48 rounded-lg bg-[#1F2937] shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2">
-              {['Anal', 'Blowjob', 'Creampie', 'Cumshot', 'DeepThroat', 'Doggystyle', 'Facial', 'Hardcore', 'Interracial', 'Lesbian', 'Masturbation', 'Orgasm', 'POV', 'Public', 'Solo', 'Squirt', 'Threesome', 'Toys'].map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setActiveFilter(category.toLowerCase())}
-                  className={`w-full px-4 py-2 text-left transition-all ${
-                    activeFilter === category.toLowerCase()
-                      ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white'
-                      : 'text-gray-400 hover:text-white hover:bg-[#111827]'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
+          ))}
 
-          {/* Pornstars dropdown */}
-          <div className="relative group">
+          {/* Pornstar */}
+          {(showAllCategories ? allCategories.pornstars : pornstars).map((category) => (
             <button
-              className={`px-4 py-2 rounded-lg transition-all bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10 flex items-center gap-2`}
+              key={category}
+              onClick={() => setActiveFilter(category.toLowerCase())}
+              className={`px-1.5 py-0.5 rounded text-[10px] transition-all ${
+                activeFilter === category.toLowerCase()
+                  ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
+                  : 'bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10'
+              }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-              <span>Pornstars</span>
+              {category}
             </button>
-            <div className="absolute z-50 left-0 mt-2 w-48 rounded-lg bg-[#1F2937] shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2">
-              {['Abella Danger', 'Adriana Chechik', 'Angela White', 'Asa Akira', 'Brandi Love', 'Dani Daniels', 'Eva Elfie', 'Gabbie Carter', 'Jia Lissa', 'Johnny Sins', 'Lana Rhoades', 'Lisa Ann', 'Mia Khalifa', 'Mia Malkova', 'Nicole Aniston', 'Riley Reid', 'Sasha Grey', 'Valentina Nappi'].map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setActiveFilter(category.toLowerCase())}
-                  className={`w-full px-4 py-2 text-left transition-all ${
-                    activeFilter === category.toLowerCase()
-                      ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white'
-                      : 'text-gray-400 hover:text-white hover:bg-[#111827]'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
+          ))}
+
+          {/* Ko'proq ko'rsatish tugmasi */}
+          <button
+            onClick={() => setShowAllCategories(!showAllCategories)}
+            className="px-1.5 py-0.5 rounded text-[10px] bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10 transition-all"
+          >
+            {showAllCategories ? 'Less' : "More"}
+          </button>
         </div>
 
         {/* Search results info */}
         {searchQuery && (
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <p className="text-gray-500">
               {filteredVideos.length === 0
                 ? 'No videos found'
@@ -392,8 +366,7 @@ function VideoGrid() {
           </div>
         )}
 
-        {/* Video grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
           {isLoading ? (
             [...Array(12)].map((_, index) => (
               <VideoSkeleton key={index} />
@@ -514,7 +487,7 @@ function VideoGrid() {
             </button>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }
@@ -532,6 +505,20 @@ function HomePageContent() {
   const videosPerPage = 30;
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [showAllCategories, setShowAllCategories] = useState(false);
+
+  // Kategoriyalar guruhlari
+  const mainCategories = ['Amateur', 'Asian', 'Blonde', 'Brunette', 'Ebony'];
+  const features = ['Big Ass', 'Big Tits', 'Verified'];
+  const actions = ['Anal', 'Blowjob', 'Hardcore', 'Lesbian', 'POV'];
+  const pornstars = ['Eva Elfie', 'Lana Rhoades', 'Mia Khalifa', 'Riley Reid'];
+
+  const allCategories = {
+    main: ['Amateur', 'Asian', 'Blonde', 'Brunette', 'Ebony', 'Latina', 'MILF', 'Redhead', 'Russian', 'Teen'],
+    features: ['Big Ass', 'Big Tits', 'Real', 'Verified'],
+    actions: ['Anal', 'Blowjob', 'Creampie', 'Cumshot', 'DeepThroat', 'Doggystyle', 'Facial', 'Hardcore', 'Interracial', 'Lesbian', 'Masturbation', 'Orgasm', 'POV', 'Public', 'Solo', 'Squirt', 'Threesome', 'Toys'],
+    pornstars: ['Abella Danger', 'Adriana Chechik', 'Angela White', 'Asa Akira', 'Brandi Love', 'Dani Daniels', 'Eva Elfie', 'Gabbie Carter', 'Jia Lissa', 'Johnny Sins', 'Lana Rhoades', 'Lisa Ann', 'Mia Khalifa', 'Mia Malkova', 'Nicole Aniston', 'Riley Reid', 'Sasha Grey', 'Valentina Nappi']
+  };
 
   useEffect(() => {
     fetchVideos();
@@ -739,138 +726,98 @@ function HomePageContent() {
         onSearch={handleSearch} 
         onFilterChange={(filter) => setActiveFilter(filter)}
       />
-      <main className="container mx-auto px-4 pt-24 pb-8 relative">
-        {/* Kategoriya tugmalari */}
-        <div className="flex flex-wrap justify-center gap-4 mb-8">
-          {/* All Videos tugmasi */}
+      <div className="w-full px-2 sm:px-4 pt-20 pb-8">
+        {/* Kategoriyalar menyusi */}
+        <div className="flex flex-wrap justify-center gap-1.5 mb-6">
+          {/* Asosiy tugma */}
           <button
             onClick={() => setActiveFilter('all')}
-            className={`px-4 py-2 rounded-lg transition-all ${
+            className={`px-1.5 py-0.5 rounded text-[10px] transition-all ${
               activeFilter === 'all'
                 ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
                 : 'bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10'
             }`}
           >
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center gap-1">
+              <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
               </svg>
-              <span>All Videos (18+)</span>
+                <span>All Videos 18+</span>
             </div>
           </button>
 
-          {/* Main Categories dropdown */}
-          <div className="relative group">
+          {/* Asosiy kategoriyalar */}
+          {(showAllCategories ? allCategories.main : mainCategories).map((category) => (
             <button
-              className={`px-4 py-2 rounded-lg transition-all bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10 flex items-center gap-2`}
+              key={category}
+              onClick={() => setActiveFilter(category.toLowerCase())}
+              className={`px-1.5 py-0.5 rounded text-[10px] transition-all ${
+                activeFilter === category.toLowerCase()
+                  ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
+                  : 'bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10'
+              }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-              <span>Main</span>
+              {category}
             </button>
-            <div className="absolute z-50 left-0 mt-2 w-48 rounded-lg bg-[#1F2937] shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2">
-              {['Amateur', 'Asian', 'Blonde', 'Brunette', 'Ebony', 'Latina', 'MILF', 'Redhead', 'Russian', 'Teen'].map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setActiveFilter(category.toLowerCase())}
-                  className={`w-full px-4 py-2 text-left transition-all ${
-                    activeFilter === category.toLowerCase()
-                      ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white'
-                      : 'text-gray-400 hover:text-white hover:bg-[#111827]'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
+          ))}
 
-          {/* Features dropdown */}
-          <div className="relative group">
+          {/* Xususiyatlar */}
+          {(showAllCategories ? allCategories.features : features).map((category) => (
             <button
-              className={`px-4 py-2 rounded-lg transition-all bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10 flex items-center gap-2`}
+              key={category}
+              onClick={() => setActiveFilter(category.toLowerCase())}
+              className={`px-1.5 py-0.5 rounded text-[10px] transition-all ${
+                activeFilter === category.toLowerCase()
+                  ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
+                  : 'bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10'
+              }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-              <span>Features</span>
+              {category}
             </button>
-            <div className="absolute z-50 left-0 mt-2 w-48 rounded-lg bg-[#1F2937] shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2">
-              {['Big Ass', 'Big Tits', 'Real', 'Verified'].map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setActiveFilter(category.toLowerCase())}
-                  className={`w-full px-4 py-2 text-left transition-all ${
-                    activeFilter === category.toLowerCase()
-                      ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white'
-                      : 'text-gray-400 hover:text-white hover:bg-[#111827]'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
+          ))}
 
-          {/* Actions dropdown */}
-          <div className="relative group">
+          {/* Harakatlar */}
+          {(showAllCategories ? allCategories.actions : actions).map((category) => (
             <button
-              className={`px-4 py-2 rounded-lg transition-all bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10 flex items-center gap-2`}
+              key={category}
+              onClick={() => setActiveFilter(category.toLowerCase())}
+              className={`px-1.5 py-0.5 rounded text-[10px] transition-all ${
+                activeFilter === category.toLowerCase()
+                  ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
+                  : 'bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10'
+              }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-              <span>Actions</span>
+              {category}
             </button>
-            <div className="absolute z-50 left-0 mt-2 w-48 rounded-lg bg-[#1F2937] shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2">
-              {['Anal', 'Blowjob', 'Creampie', 'Cumshot', 'DeepThroat', 'Doggystyle', 'Facial', 'Hardcore', 'Interracial', 'Lesbian', 'Masturbation', 'Orgasm', 'POV', 'Public', 'Solo', 'Squirt', 'Threesome', 'Toys'].map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setActiveFilter(category.toLowerCase())}
-                  className={`w-full px-4 py-2 text-left transition-all ${
-                    activeFilter === category.toLowerCase()
-                      ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white'
-                      : 'text-gray-400 hover:text-white hover:bg-[#111827]'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
+          ))}
 
-          {/* Pornstars dropdown */}
-          <div className="relative group">
+          {/* Pornstar */}
+          {(showAllCategories ? allCategories.pornstars : pornstars).map((category) => (
             <button
-              className={`px-4 py-2 rounded-lg transition-all bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10 flex items-center gap-2`}
+              key={category}
+              onClick={() => setActiveFilter(category.toLowerCase())}
+              className={`px-1.5 py-0.5 rounded text-[10px] transition-all ${
+                activeFilter === category.toLowerCase()
+                  ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
+                  : 'bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10'
+              }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-              <span>Pornstars</span>
+              {category}
             </button>
-            <div className="absolute z-50 left-0 mt-2 w-48 rounded-lg bg-[#1F2937] shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2">
-              {['Abella Danger', 'Adriana Chechik', 'Angela White', 'Asa Akira', 'Brandi Love', 'Dani Daniels', 'Eva Elfie', 'Gabbie Carter', 'Jia Lissa', 'Johnny Sins', 'Lana Rhoades', 'Lisa Ann', 'Mia Khalifa', 'Mia Malkova', 'Nicole Aniston', 'Riley Reid', 'Sasha Grey', 'Valentina Nappi'].map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setActiveFilter(category.toLowerCase())}
-                  className={`w-full px-4 py-2 text-left transition-all ${
-                    activeFilter === category.toLowerCase()
-                      ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white'
-                      : 'text-gray-400 hover:text-white hover:bg-[#111827]'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
+          ))}
+
+          {/* Ko'proq ko'rsatish tugmasi */}
+          <button
+            onClick={() => setShowAllCategories(!showAllCategories)}
+            className="px-1.5 py-0.5 rounded text-[10px] bg-[#111827]/60 text-gray-400 hover:text-white hover:bg-[#1F2937]/80 hover:shadow-lg hover:shadow-cyan-500/10 transition-all"
+          >
+            {showAllCategories ? 'Less' : "More"}
+          </button>
         </div>
 
         {/* Search results info */}
         {searchQuery && (
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <p className="text-gray-500">
               {filteredVideos.length === 0
                 ? 'No videos found'
@@ -879,8 +826,7 @@ function HomePageContent() {
           </div>
         )}
 
-        {/* Video grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
           {isLoading ? (
             [...Array(12)].map((_, index) => (
               <VideoSkeleton key={index} />
@@ -1001,7 +947,7 @@ function HomePageContent() {
             </button>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

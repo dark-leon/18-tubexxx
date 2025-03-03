@@ -12,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Error fetching videos for sitemap:', error);
   }
 
+  // Asosiy sahifalar
   const mainRoutes = [
     {
       url: baseUrl,
@@ -33,67 +34,103 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   ];
 
+  // Video sahifalari
   const videoRoutes = videos
-    .filter(video => video.status?.state === 'ready')
+    .filter(video => video.status?.state === 'ready' && video.meta?.isApproved !== "false")
     .map((video) => ({
       url: `${baseUrl}/watch/${video.uid}`,
       lastModified: new Date(video.modified || video.created),
       changeFrequency: 'hourly' as const,
       priority: 0.9,
+      alternateRefs: [
+        {
+          href: `${baseUrl}/watch/${video.uid}`,
+          hreflang: 'x-default'
+        },
+        {
+          href: `${baseUrl}/watch/${video.uid}`,
+          hreflang: 'en'
+        }
+      ]
     }));
 
+  // Kategoriya sahifalari
   const categoryRoutes = defaultCategories.map((category: Category) => ({
     url: `${baseUrl}/category/${category.slug}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
     priority: 0.8,
+    alternateRefs: [
+      {
+        href: `${baseUrl}/category/${category.slug}`,
+        hreflang: 'x-default'
+      },
+      {
+        href: `${baseUrl}/category/${category.slug}`,
+        hreflang: 'en'
+      }
+    ]
   }));
 
+  // Tag sahifalari
   const tagSet = new Set<string>();
-  videos.forEach(video => {
-    if (video.meta?.tags) {
-      video.meta.tags.split(',').forEach(tag => {
-        tagSet.add(tag.trim().toLowerCase());
-      });
-    }
-  });
+  videos
+    .filter(video => video.status?.state === 'ready' && video.meta?.isApproved !== "false")
+    .forEach(video => {
+      if (video.meta?.tags) {
+        video.meta.tags.split(',').forEach(tag => {
+          tagSet.add(tag.trim().toLowerCase());
+        });
+      }
+    });
 
   const tagRoutes = Array.from(tagSet).map(tag => ({
     url: `${baseUrl}/tag/${encodeURIComponent(tag)}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
     priority: 0.7,
+    alternateRefs: [
+      {
+        href: `${baseUrl}/tag/${encodeURIComponent(tag)}`,
+        hreflang: 'x-default'
+      },
+      {
+        href: `${baseUrl}/tag/${encodeURIComponent(tag)}`,
+        hreflang: 'en'
+      }
+    ]
   }));
 
+  // Paginatsiya sahifalari
   const videosPerPage = 24;
-  const totalPages = Math.ceil(videos.length / videosPerPage);
+  const approvedVideos = videos.filter(video => 
+    video.status?.state === 'ready' && video.meta?.isApproved !== "false"
+  );
+  const totalPages = Math.ceil(approvedVideos.length / videosPerPage);
 
   const paginationRoutes = Array.from({ length: totalPages }, (_, i) => ({
     url: `${baseUrl}/page/${i + 1}`,
     lastModified: new Date(),
     changeFrequency: 'hourly' as const,
     priority: i === 0 ? 0.9 : 0.7,
+    alternateRefs: [
+      {
+        href: `${baseUrl}/page/${i + 1}`,
+        hreflang: 'x-default'
+      },
+      {
+        href: `${baseUrl}/page/${i + 1}`,
+        hreflang: 'en'
+      }
+    ]
   }));
 
-  const allRoutes = [
+  // Barcha routelarni birlashtirish
+  return [
     ...mainRoutes,
     ...videoRoutes,
     ...categoryRoutes,
     ...tagRoutes,
     ...paginationRoutes
   ];
-
-  return allRoutes.map(route => ({
-    ...route,
-    alternateRefs: [
-      {
-        href: route.url,
-        hreflang: 'x-default'
-      },
-      {
-        href: route.url,
-        hreflang: 'en'
-      }
-    ]
-  }));
 } 

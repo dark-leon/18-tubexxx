@@ -1,7 +1,7 @@
 {
-  "name": "18-Tube XXX - Free Adult Videos in HD Quality",
-  "short_name": "18-Tube XXX",
-  "description": "Watch and download free adult videos in HD quality. The best collection of XXX content, daily updates, no ads, and fast streaming.",
+  "name": "18-TubeXXX - Free Adult Videos",
+  "short_name": "18-TubeXXX",
+  "description": "Watch free adult videos in HD quality. Daily updates, no ads, fast streaming.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -23,6 +23,11 @@
       "src": "/icon.png",
       "sizes": "32x32",
       "type": "image/png"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32",
+      "type": "image/x-icon"
     }
   ],
   "orientation": "portrait",

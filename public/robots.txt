@@ -4,5 +4,11 @@ Allow: /category/*
 Allow: /tag/*
 Allow: /page/*
 
+# Google
+Sitemap: https://www.18-tubexxx.com/sitemap.xml
+Sitemap: https://www.18-tubexxx.com/video-sitemap.xml
+
+# Yandex
+Host: https://www.18-tubexxx.com
 Sitemap: https://www.18-tubexxx.com/sitemap.xml
 Sitemap: https://www.18-tubexxx.com/video-sitemap.xml 

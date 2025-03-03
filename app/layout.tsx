@@ -2,21 +2,21 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: '18-Tube XXX - Free Adult Videos in HD Quality',
-  description: 'Watch and download free adult videos in HD quality. The best collection of XXX content, daily updates, no ads, and fast streaming.',
-  keywords: 'adult videos, xxx videos, porn videos, free porn, hd porn, streaming porn, xxx content, adult content, porn streaming',
-  metadataBase: new URL('https://18-tubexxx.com'),
+  title: '18-TubeXXX - Free Adult Videos',
+  description: 'Watch free adult videos in HD quality. Daily updates, no ads, fast streaming.',
+  keywords: 'adult videos, xxx videos, porn videos, free porn, hd porn, streaming porn, xxx content',
+  metadataBase: new URL('https://www.18-tubexxx.com'),
   openGraph: {
-    title: '18-Tube XXX - Free Adult Videos in HD Quality',
-    description: 'Watch and download free adult videos in HD quality. The best collection of XXX content, daily updates, no ads, and fast streaming.',
-    url: 'https://18-tubexxx.com',
-    siteName: '18-Tube XXX',
+    title: '18-TubeXXX - Free Adult Videos',
+    description: 'Watch free adult videos in HD quality. Daily updates, no ads, fast streaming.',
+    url: 'https://www.18-tubexxx.com',
+    siteName: '18-TubeXXX',
     images: [
       {
         url: '/icon-512.png',
         width: 512,
         height: 512,
-        alt: '18-Tube XXX Logo',
+        alt: '18-TubeXXX Logo',
       }
     ],
     locale: 'en_US',
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: '18-Tube XXX - Free Adult Videos in HD Quality',
-    description: 'Watch and download free adult videos in HD quality. The best collection of XXX content.',
+    title: '18-TubeXXX - Free Adult Videos',
+    description: 'Watch free adult videos in HD quality. Daily updates.',
     images: ['/icon-512.png'],
   },
   icons: {
@@ -78,9 +78,9 @@ export default function RootLayout({
   const schemaData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "18-Tube XXX - Free Adult Videos in HD Quality",
+    "name": "18-TubeXXX - Free Adult Videos",
     "url": "https://www.18-tubexxx.com",
-    "description": "Watch and download free adult videos in HD quality. The best collection of XXX content, daily updates, no ads, and fast streaming.",
+    "description": "Watch free adult videos in HD quality. Daily updates, no ads, fast streaming.",
     "potentialAction": {
       "@type": "SearchAction",
       "target": {
@@ -89,13 +89,9 @@ export default function RootLayout({
       },
       "query-input": "required name=search_term_string"
     },
-    "sameAs": [
-      "https://twitter.com/18tubexxx",
-      "https://www.instagram.com/18tubexxx"
-    ],
     "publisher": {
       "@type": "Organization",
-      "name": "18-Tube XXX - Free Adult Videos in HD Quality",
+      "name": "18-TubeXXX",
       "logo": {
         "@type": "ImageObject",
         "url": "https://www.18-tubexxx.com/icon-512.png",

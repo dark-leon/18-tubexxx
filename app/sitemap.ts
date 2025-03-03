@@ -40,37 +40,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .map((video) => ({
       url: `${baseUrl}/watch/${video.uid}`,
       lastModified: new Date(video.modified || video.created),
-      changeFrequency: 'hourly' as const,
+      changeFrequency: 'daily' as const,
       priority: 0.9,
-      alternateRefs: [
-        {
-          href: `${baseUrl}/watch/${video.uid}`,
-          hreflang: 'x-default'
-        },
-        {
-          href: `${baseUrl}/watch/${video.uid}`,
-          hreflang: 'en'
-        }
-      ]
     }));
 
   // Kategoriya sahifalari
-  const categoryRoutes = defaultCategories.map((category: Category) => ({
-    url: `${baseUrl}/category/${category.slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: 0.8,
-    alternateRefs: [
-      {
-        href: `${baseUrl}/category/${category.slug}`,
-        hreflang: 'x-default'
-      },
-      {
-        href: `${baseUrl}/category/${category.slug}`,
-        hreflang: 'en'
-      }
-    ]
-  }));
+  const categoryRoutes = defaultCategories
+    .filter(category => category.slug) // Faqat slug'i bor kategoriyalarni olish
+    .map((category: Category) => ({
+      url: `${baseUrl}/category/${encodeURIComponent(category.slug)}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.8,
+    }));
 
   // Tag sahifalari
   const tagSet = new Set<string>();
@@ -79,7 +61,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .forEach(video => {
       if (video.meta?.tags) {
         video.meta.tags.split(',').forEach(tag => {
-          tagSet.add(tag.trim().toLowerCase());
+          const cleanTag = tag.trim().toLowerCase()
+            .replace(/[^a-z0-9-]/g, '-') // Xavfsiz URL yaratish
+            .replace(/-+/g, '-') // Ketma-ket chiziqchalarni bitta qilish
+            .replace(/^-|-$/g, ''); // Boshi va oxiridagi chiziqchalarni olib tashlash
+          if (cleanTag) {
+            tagSet.add(cleanTag);
+          }
         });
       }
     });
@@ -89,16 +77,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
     priority: 0.7,
-    alternateRefs: [
-      {
-        href: `${baseUrl}/tag/${encodeURIComponent(tag)}`,
-        hreflang: 'x-default'
-      },
-      {
-        href: `${baseUrl}/tag/${encodeURIComponent(tag)}`,
-        hreflang: 'en'
-      }
-    ]
   }));
 
   // Paginatsiya sahifalari
@@ -111,26 +89,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const paginationRoutes = Array.from({ length: totalPages }, (_, i) => ({
     url: `${baseUrl}/page/${i + 1}`,
     lastModified: new Date(),
-    changeFrequency: 'hourly' as const,
+    changeFrequency: 'daily' as const,
     priority: i === 0 ? 0.9 : 0.7,
-    alternateRefs: [
-      {
-        href: `${baseUrl}/page/${i + 1}`,
-        hreflang: 'x-default'
-      },
-      {
-        href: `${baseUrl}/page/${i + 1}`,
-        hreflang: 'en'
-      }
-    ]
   }));
 
-  // Barcha routelarni birlashtirish
-  return [
+  // Barcha routelarni birlashtirish va filtrlash
+  const allRoutes = [
     ...mainRoutes,
     ...videoRoutes,
     ...categoryRoutes,
     ...tagRoutes,
     ...paginationRoutes
-  ];
+  ].filter(route => {
+    try {
+      // URL validatsiyasi
+      new URL(route.url);
+      return true;
+    } catch {
+      console.error('Invalid URL in sitemap:', route.url);
+      return false;
+    }
+  });
+
+  return allRoutes;
 } 

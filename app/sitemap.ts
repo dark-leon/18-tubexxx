@@ -33,20 +33,54 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const videoRoutes = videos
-    .filter(video => video.status.state === 'ready') // Faqat tayyor videolarni qo'shamiz
-    .sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime()) // Eng yangi videolar yuqorida
+    .filter(video => video.status.state === 'ready')
+    .sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime())
     .map((video) => ({
       url: `${baseUrl}/watch/${video.uid}`,
       lastModified: new Date(video.modified),
-      changeFrequency: 'daily' as const,
-      priority: 0.8,
+      changeFrequency: 'hourly' as const,
+      priority: 0.9,
+      alternateRefs: [
+        {
+          href: `${baseUrl}/embed/${video.uid}`,
+          type: 'text/html',
+          title: video.meta.name || 'Video Player'
+        }
+      ],
+      news: {
+        publication: {
+          name: '18-Tube XXX',
+          language: 'en'
+        },
+        publicationDate: video.created,
+        title: video.meta.name || 'Adult Video'
+      },
+      video: {
+        thumbnailUrl: `https://videodelivery.net/${video.uid}/thumbnails/thumbnail.jpg?time=${Math.floor(video.duration / 2)}s`,
+        title: video.meta.name || 'Adult Video',
+        description: video.meta.description || 'Watch HD quality adult video',
+        duration: `PT${Math.floor(video.duration / 60)}M${Math.floor(video.duration % 60)}S`,
+        uploadDate: video.created,
+        contentUrl: `${baseUrl}/watch/${video.uid}`,
+        embedUrl: `${baseUrl}/embed/${video.uid}`,
+        interactionStatistic: [
+          {
+            type: 'WatchAction',
+            userInteractionCount: video.meta.views || 0
+          },
+          {
+            type: 'LikeAction',
+            userInteractionCount: video.meta.likes || 0
+          }
+        ]
+      }
     }));
 
   const categoryRoutes = defaultCategories.map((category: Category) => ({
     url: `${baseUrl}/category/${category.slug}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
-    priority: 0.7,
+    priority: 0.8,
   }));
 
   const tagSet = new Set<string>();
@@ -62,15 +96,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${baseUrl}/tag/${encodeURIComponent(tag)}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
-    priority: 0.6,
+    priority: 0.7,
   }));
 
-  const totalPages = Math.ceil(videos.length / 24); // Har sahifada 24 ta video
+  const videosPerPage = 24;
+  const totalPages = Math.ceil(videos.length / videosPerPage);
   const paginationRoutes = Array.from({ length: totalPages }, (_, i) => ({
     url: `${baseUrl}/page/${i + 1}`,
     lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: 0.5,
+    changeFrequency: 'hourly' as const,
+    priority: i === 0 ? 0.8 : 0.6,
   }));
 
   return [
@@ -79,5 +114,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...categoryRoutes,
     ...tagRoutes,
     ...paginationRoutes
-  ];
+  ].map(route => ({
+    ...route,
+    alternateRefs: [
+      {
+        href: route.url,
+        hreflang: 'x-default'
+      },
+      {
+        href: route.url,
+        hreflang: 'en'
+      }
+    ]
+  }));
 } 

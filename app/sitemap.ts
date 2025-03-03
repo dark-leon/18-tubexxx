@@ -1,9 +1,10 @@
-import { getVideos, defaultCategories, Category, VideoData } from './utils/cloudflare';
+import { getVideos } from './utils/cloudflare';
+import { defaultCategories, Category } from './utils/categories';
 import { MetadataRoute } from 'next';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.18-tubexxx.com';
-  let videos: VideoData[] = [];
+  let videos = [];
 
   try {
     videos = await getVideos();
@@ -66,11 +67,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const videosPerPage = 24;
   const totalPages = Math.ceil(videos.length / videosPerPage);
+
   const paginationRoutes = Array.from({ length: totalPages }, (_, i) => ({
     url: `${baseUrl}/page/${i + 1}`,
     lastModified: new Date(),
     changeFrequency: 'hourly' as const,
-    priority: i === 0 ? 0.8 : 0.6,
+    priority: i === 0 ? 0.9 : 0.7,
   }));
 
   const allRoutes = [

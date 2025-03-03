@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { defaultCategories } from '../utils/cloudflare';
+import { defaultCategories, categoryGroups } from '@/app/utils/categories';
 
 export default function UploadPage() {
   const [uploading, setUploading] = useState(false);
@@ -19,14 +19,6 @@ export default function UploadPage() {
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-
-  // Group categories
-  const categoryGroups = {
-    'Main': defaultCategories.filter(c => ['amateur', 'asian', 'blonde', 'brunette', 'ebony', 'latina', 'milf', 'redhead', 'russian', 'teen'].includes(c.id)),
-    'Features': defaultCategories.filter(c => ['big-ass', 'big-tits', 'real', 'verified'].includes(c.id)),
-    'Actions': defaultCategories.filter(c => ['anal', 'blowjob', 'creampie', 'cumshot', 'deepthroat', 'doggystyle', 'facial', 'hardcore', 'interracial', 'lesbian', 'masturbation', 'orgasm', 'pov', 'public', 'solo', 'squirt', 'threesome', 'toys'].includes(c.id)),
-    'Pornstars': defaultCategories.filter(c => c.name.includes(' '))
-  };
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -308,29 +300,113 @@ export default function UploadPage() {
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-300">Categories</label>
                   <div className="space-y-6">
-                    {Object.entries(categoryGroups).map(([groupName, categories]) => (
-                      <div key={groupName} className="space-y-2">
-                        <h3 className="text-sm font-medium text-gray-400 mb-2 sticky top-0 /80 backdrop-blur-sm py-2 z-10">
-                          {groupName}
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                          {categories.map((category) => (
-                            <button
-                              key={category.id}
-                              type="button"
-                              onClick={() => handleCategoryToggle(category.id)}
-                              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                                selectedCategories.includes(category.id)
-                                  ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
-                                  : 'bg-[#1E293B]/60 text-gray-400 hover:text-white border border-cyan-950'
-                              }`}
-                            >
-                              {category.name}
-                            </button>
-                          ))}
-                        </div>
+                    <div className="mb-4">
+                      <h3 className="text-sm font-medium text-emerald-400 mb-2">Asosiy kategoriyalar</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {categoryGroups.main.map((category) => (
+                          <button
+                            key={category.id}
+                            type="button"
+                            onClick={() => {
+                              if (selectedCategories.includes(category.id)) {
+                                setSelectedCategories(prev => prev.filter(id => id !== category.id));
+                              } else {
+                                setSelectedCategories(prev => [...prev, category.id]);
+                              }
+                            }}
+                            className={`px-3 py-1.5 rounded-full text-sm transition-all ${
+                              selectedCategories.includes(category.id)
+                                ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
+                                : 'bg-[#1E293B]/60 backdrop-blur-sm text-gray-400 border border-cyan-950'
+                            }`}
+                            disabled={uploading}
+                          >
+                            {category.name}
+                          </button>
+                        ))}
                       </div>
-                    ))}
+                    </div>
+
+                    <div className="mb-4">
+                      <h3 className="text-sm font-medium text-emerald-400 mb-2">Xususiyatlar</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {categoryGroups.features.map((category) => (
+                          <button
+                            key={category.id}
+                            type="button"
+                            onClick={() => {
+                              if (selectedCategories.includes(category.id)) {
+                                setSelectedCategories(prev => prev.filter(id => id !== category.id));
+                              } else {
+                                setSelectedCategories(prev => [...prev, category.id]);
+                              }
+                            }}
+                            className={`px-3 py-1.5 rounded-full text-sm transition-all ${
+                              selectedCategories.includes(category.id)
+                                ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
+                                : 'bg-[#1E293B]/60 backdrop-blur-sm text-gray-400 border border-cyan-950'
+                            }`}
+                            disabled={uploading}
+                          >
+                            {category.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <h3 className="text-sm font-medium text-emerald-400 mb-2">Harakatlar</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {categoryGroups.actions.map((category) => (
+                          <button
+                            key={category.id}
+                            type="button"
+                            onClick={() => {
+                              if (selectedCategories.includes(category.id)) {
+                                setSelectedCategories(prev => prev.filter(id => id !== category.id));
+                              } else {
+                                setSelectedCategories(prev => [...prev, category.id]);
+                              }
+                            }}
+                            className={`px-3 py-1.5 rounded-full text-sm transition-all ${
+                              selectedCategories.includes(category.id)
+                                ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
+                                : 'bg-[#1E293B]/60 backdrop-blur-sm text-gray-400 border border-cyan-950'
+                            }`}
+                            disabled={uploading}
+                          >
+                            {category.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <h3 className="text-sm font-medium text-emerald-400 mb-2">Pornstarlar</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {categoryGroups.pornstars.map((category) => (
+                          <button
+                            key={category.id}
+                            type="button"
+                            onClick={() => {
+                              if (selectedCategories.includes(category.id)) {
+                                setSelectedCategories(prev => prev.filter(id => id !== category.id));
+                              } else {
+                                setSelectedCategories(prev => [...prev, category.id]);
+                              }
+                            }}
+                            className={`px-3 py-1.5 rounded-full text-sm transition-all ${
+                              selectedCategories.includes(category.id)
+                                ? 'bg-gradient-to-r from-emerald-400 to-cyan-400 text-white shadow-lg shadow-emerald-500/20'
+                                : 'bg-[#1E293B]/60 backdrop-blur-sm text-gray-400 border border-cyan-950'
+                            }`}
+                            disabled={uploading}
+                          >
+                            {category.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
 

@@ -33,47 +33,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const videoRoutes = videos
-    .filter(video => video.status.state === 'ready')
-    .sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime())
+    .filter(video => video.status?.state === 'ready')
     .map((video) => ({
       url: `${baseUrl}/watch/${video.uid}`,
-      lastModified: new Date(video.modified),
+      lastModified: new Date(video.modified || video.created),
       changeFrequency: 'hourly' as const,
       priority: 0.9,
-      alternateRefs: [
-        {
-          href: `${baseUrl}/embed/${video.uid}`,
-          type: 'text/html',
-          title: video.meta.name || 'Video Player'
-        }
-      ],
-      news: {
-        publication: {
-          name: '18-Tube XXX',
-          language: 'en'
-        },
-        publicationDate: video.created,
-        title: video.meta.name || 'Adult Video'
-      },
-      video: {
-        thumbnailUrl: `https://videodelivery.net/${video.uid}/thumbnails/thumbnail.jpg?time=${Math.floor(video.duration / 2)}s`,
-        title: video.meta.name || 'Adult Video',
-        description: video.meta.description || 'Watch HD quality adult video',
-        duration: `PT${Math.floor(video.duration / 60)}M${Math.floor(video.duration % 60)}S`,
-        uploadDate: video.created,
-        contentUrl: `${baseUrl}/watch/${video.uid}`,
-        embedUrl: `${baseUrl}/embed/${video.uid}`,
-        interactionStatistic: [
-          {
-            type: 'WatchAction',
-            userInteractionCount: video.meta.views || 0
-          },
-          {
-            type: 'LikeAction',
-            userInteractionCount: video.meta.likes || 0
-          }
-        ]
-      }
     }));
 
   const categoryRoutes = defaultCategories.map((category: Category) => ({
@@ -85,7 +50,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const tagSet = new Set<string>();
   videos.forEach(video => {
-    if (video.meta.tags) {
+    if (video.meta?.tags) {
       video.meta.tags.split(',').forEach(tag => {
         tagSet.add(tag.trim().toLowerCase());
       });
@@ -108,13 +73,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: i === 0 ? 0.8 : 0.6,
   }));
 
-  return [
+  const allRoutes = [
     ...mainRoutes,
     ...videoRoutes,
     ...categoryRoutes,
     ...tagRoutes,
     ...paginationRoutes
-  ].map(route => ({
+  ];
+
+  return allRoutes.map(route => ({
     ...route,
     alternateRefs: [
       {

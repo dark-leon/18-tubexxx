@@ -24,7 +24,7 @@ export async function GET() {
     const baseUrl = 'https://www.18-tubexxx.com';
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="sitemap.xsl"?>
+<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
       ${videos
@@ -69,8 +69,7 @@ export async function GET() {
     return new Response(xml, {
       headers: {
         'Content-Type': 'application/xml; charset=utf-8',
-        'Cache-Control': 'public, max-age=1800, stale-while-revalidate=3600',
-        'X-Robots-Tag': 'noindex'
+        'Cache-Control': 'public, max-age=1800, stale-while-revalidate=3600'
       }
     });
   } catch (error) {

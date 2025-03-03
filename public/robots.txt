@@ -1,14 +1,8 @@
 User-agent: *
-Allow: /
 Allow: /watch/*
 Allow: /category/*
 Allow: /tag/*
 Allow: /page/*
-Allow: /embed/*
-Disallow: /api/*
-Disallow: /_next/*
-Disallow: /static/*
 
-# Sitemaps
 Sitemap: https://www.18-tubexxx.com/sitemap.xml
 Sitemap: https://www.18-tubexxx.com/video-sitemap.xml 

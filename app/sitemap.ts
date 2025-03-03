@@ -1,10 +1,10 @@
-import { getVideos } from './utils/cloudflare';
+import { getVideos, VideoData } from './utils/cloudflare';
 import { defaultCategories, Category } from './utils/categories';
 import { MetadataRoute } from 'next';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.18-tubexxx.com';
-  let videos = [];
+  let videos: VideoData[] = [];
 
   try {
     videos = await getVideos();

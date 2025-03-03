@@ -23,14 +23,14 @@ export async function GET() {
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
             xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
       ${videos
-        .filter(video => video.status?.state === 'ready')
+        .filter(video => video.status?.state === 'ready' && video.meta?.isApproved !== "false")
         .map(video => `
           <url>
             <loc>${baseUrl}/watch/${video.uid}</loc>
             <video:video>
               <video:thumbnail_loc>${escapeHTML(video.thumbnail)}</video:thumbnail_loc>
               <video:title>${escapeHTML(video.meta.name)}</video:title>
-              <video:description>${escapeHTML(video.meta.description || '')}</video:description>
+              <video:description>${escapeHTML(video.meta.description || video.meta.name)}</video:description>
               <video:content_loc>${escapeHTML(`${baseUrl}/api/stream/${video.uid}`)}</video:content_loc>
               <video:player_loc>${escapeHTML(`${baseUrl}/watch/${video.uid}`)}</video:player_loc>
               <video:duration>${video.duration || 0}</video:duration>
@@ -42,6 +42,7 @@ export async function GET() {
               ${video.meta.category ? `<video:category>${escapeHTML(video.meta.category)}</video:category>` : ''}
               <video:uploader info="${baseUrl}">18-tubexxx</video:uploader>
               <video:view_count>${video.meta.views || 0}</video:view_count>
+              <video:rating>${video.meta.likes || 0}</video:rating>
             </video:video>
           </url>
         `).join('')}

@@ -58,10 +58,8 @@ export async function getVideos(): Promise<VideoData[]> {
 
     const videos = data.result
       .filter((video: VideoData) => {
-        // Agar meta mavjud bo'lmasa yoki isApproved undefined bo'lsa, uni ko'rsatamiz
-        if (!video.meta || video.meta.isApproved === undefined) return true;
-        // Agar isApproved "false" bo'lsa, ko'rsatmaymiz
-        return video.meta.isApproved !== "false";
+        // Faqat ready holatdagi videolarni qaytarish
+        return video.status?.state === 'ready';
       })
       .map((video: VideoData) => ({
         ...video,

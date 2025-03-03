@@ -97,6 +97,7 @@ export interface VideoMeta {
   dislikes?: string;
   rating?: string;
   uploader?: string;
+  isApproved?: string;
 }
 
 export async function getVideo(videoId: string): Promise<VideoData | null> {
